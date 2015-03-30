@@ -1,0 +1,54 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+
+        <record id="view_bpe_hr_employee_form" model="ir.ui.view">
+            <field name="name">bpe.hr.employee.form</field>
+            <field name="model">hr.employee</field>
+            <field name="inherit_id" ref="hr.view_employee_form"/>
+            <field eval="60" name="priority"/>
+            <field name="arch" type="xml">
+            	<field name="work_location" position="replace">
+            		<field name="work_location" invisible="1" />
+            		<field name="working_location_id" />
+            	</field>
+			</field>
+		</record>
+
+		<!-- Working Location -->			
+        <record id="view_bpe_hr_working_location_tree" model="ir.ui.view">
+            <field name="name">bpe.hr.working.location.tree</field>
+            <field name="model">hr.working.location</field>
+            <field eval="10" name="priority"/>
+            <field name="arch" type="xml">
+            	<tree string="Working Location" editable="top">
+            		<field name="name" required="1" />
+            	</tree>
+			</field>
+		</record>
+		
+	    <record model="ir.ui.view" id="view_bpe_hr_working_location_filter">
+	      	<field name="name">bpe.hr.working.location.search</field>
+	      	<field name="model">hr.working.location</field>
+	      	<field name="arch" type="xml">
+	        	<search string="Working Location">
+	          		<field name="name" />
+	        	</search>
+	      	</field>
+	    </record>
+
+	    <record model="ir.actions.act_window" id="action_bpe_hr_working_location">
+	        <field name="name">Working Location</field>
+	        <field name="res_model">hr.working.location</field>
+	        <field name="view_mode">tree</field>
+	    </record>	   
+	     		
+    	<menuitem name="Working Location" 
+    		parent="hr.menu_hr_configuration" 
+    		id="menu_hr_working_location" 
+    		sequence="100" 
+    		action="action_bpe_hr_working_location"/>
+    
+    
+    </data>
+</openerp>

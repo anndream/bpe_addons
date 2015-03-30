@@ -1,0 +1,166 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+
+        <record id="bpe_rfq_tree" model="ir.ui.view">
+            <field name="name">rfq.purchase.order.tree</field>
+            <field name="model">purchase.order</field>
+            <field name="arch" type="xml">
+                <tree fonts="bold:message_unread==True" colors="grey:state=='cancel';blue:state in ('wait','confirmed');red:state in ('except_invoice','except_picking')" string="Purchase Order">
+                    <field name="message_unread" invisible="1"/>
+                    <field name="rfq_no" />
+                    <field name="rfq_date" />
+                    <field name="partner_id"/>
+                    <field name="company_id" groups="base.group_multi_company" widget="selection"/>
+                    <field name="minimum_planned_date" invisible="context.get('quotation_only', False)"/>
+                    <field name="origin"/>
+                    <field name="amount_untaxed" sum="Total Untaxed amount" string="Untaxed"/>
+                    <field name="amount_total" sum="Total amount"/>
+                    <field name="state"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="bpe_purchase_order_tree" model="ir.ui.view">
+            <field name="name">bpe.purchase.order.tree</field>
+            <field name="model">purchase.order</field>
+            <field name="arch" type="xml">
+                <tree fonts="bold:message_unread==True" colors="grey:state=='cancel';blue:state in ('wait','confirmed');red:state in ('except_invoice','except_picking')" string="Purchase Order">
+                    <field name="message_unread" invisible="1"/>
+                    <field name="name" string="Purchase No" />
+                    <field name="date_order" />
+                    <field name="rfq_no" />
+                    <field name="rfq_date" />
+                    <field name="partner_id"/>
+                    <field name="company_id" groups="base.group_multi_company" widget="selection"/>
+                    <field name="minimum_planned_date" invisible="context.get('quotation_only', False)"/>
+                    <field name="origin"/>
+                    <field name="amount_untaxed" sum="Total Untaxed amount" string="Untaxed"/>
+                    <field name="amount_total" sum="Total amount"/>
+                    <field name="state"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="purchase_rfq_action1" model="ir.actions.act_window.view">
+           <field eval="1" name="sequence"/>
+           <field name="view_mode">tree</field>
+           <field name="view_id" ref="bpe_rfq_tree"/>
+           <field name="act_window_id" ref="purchase.purchase_rfq"/>
+        </record>
+
+        <record id="purchase_order_action1" model="ir.actions.act_window.view">
+           <field eval="1" name="sequence"/>
+           <field name="view_mode">tree</field>
+           <field name="view_id" ref="bpe_purchase_order_tree"/>
+           <field name="act_window_id" ref="purchase.purchase_form_action"/>
+        </record>
+
+
+	    <record model="ir.ui.view" id="pbe_purchase_order_form_inherit">
+	        <field name="name">pbe.purchase.order.form.inherit</field>
+	        <field name="model">purchase.order</field>
+	        <field name="inherit_id" ref="purchase_requisition.purchase_order_form_inherit"/>
+	        <field name="arch" type="xml">
+	            <field name="requisition_id" position="replace">
+	                <field name="requisition_id" string="Purchase Requisition"/>
+	            </field>
+	        </field>
+	    </record>
+
+	    <record model="ir.ui.view" id="view_bpe_purchase_order_form">
+	        <field name="name">bpe.purchase.order.form</field>
+	        <field name="model">purchase.order</field>
+        	<field name="inherit_id" ref="purchase.purchase_order_form"/>
+	        <field name="arch" type="xml">
+	        	<field name="payment_term_id" position="replace">
+	        		<field name="payment_term_id" string="Credit Term" />
+	        	</field>
+	        	<field name="incoterm_id" position="replace">
+					<field name="rfq_no" />
+					<field name="rfq_date" />
+	        		<field name="incoterm_id" string="Term of Transportation" />
+	        	</field>
+	        	<field name="fiscal_position" position="replace">
+	        		<field name="fiscal_position" invisible="1" />
+	        	</field>
+	        
+	        	<xpath expr="//page[@string='Products']" position="after">
+					<page string="Additional &amp; Approval Area">
+						<group>
+							<group string="Additional Requirement">
+								<field name="additional_requirement_manual" />	
+								<field name="additional_requirement_certificate" />	
+								<field name="additional_requirement_other" />	
+								<field name="additional_other" attrs="{'invisible': [('additional_requirement_other','=',False)]}"/>
+							</group>
+							<group string="Other Information">
+								<div id="div_check_zone">
+									<label for="div_check_zone" string="Check By" />
+									<field name="user_checked_id" required="1"
+										attrs="{'readonly': [('date_checked','!=',False)]}"/>
+									<field name="date_checked" readonly="1" />
+									<button name="button_check" type="object" string="Check" icon="terp-personal"
+										attrs="{'invisible': [('date_checked','!=',False)]}" />
+								</div>
+								<div id="div_approve_zone">
+									<label for="div_approve_zone" string="Approve By" />
+									<field name="user_approve_id" required="1"
+										attrs="{'readonly': [('date_approve','!=',False)]}"/>
+									<field name="date_approve" readonly="1" />
+									<!-- 
+									<button name="button_approve" type="object" string="Approve" icon="terp-personal" 
+										attrs="{'invisible': [('date_approve','!=',False)]}"/>
+                    				<button name="purchase_confirm" string="Approve" states="draft,bid" icon="terp-personal" 
+                    					attrs="{'invisible': [('date_approve','!=',False)]}" id="approve_confirm"/>
+									 -->
+								</div>
+							</group>
+						</group>
+						
+					</page>
+	        	</xpath>
+	        	
+	        	<button name="action_cancel_draft" position="replace">
+	        		<button name="action_cancel_draft" invisible="1" states="cancel,sent,confirmed" string="Set to Draft" type="object" />
+	        	</button>	        	
+	        	
+			</field>
+		</record>
+		
+		<record id="view_bpe_request_for_quotation_filter" model="ir.ui.view">
+            <field name="name">bpe.request.quotation.select</field>
+            <field name="model">purchase.order</field>
+            <field name="inherit_id" ref="purchase.view_request_for_quotation_filter"/>
+            <field name="arch" type="xml">
+            	<field name="create_uid" position="after">
+            		<field name="user_checked_id" />
+            		<field name="user_approve_id" />
+            	</field> 
+            	<filter name="not_invoiced" position="after">
+                    <filter icon="terp-personal-" string="My Check" name="filter_my_checked"  domain="[('user_checked_id','=', uid)]" help="My Checked Requisition"/>
+                    <filter icon="terp-personal-" string="My Approve" name="filter_my_approve" domain="[('user_approve_id','=', uid)]" help="My Approve Requisition"/>
+            	</filter>
+            </field>
+        </record>
+        
+        <record id="view_bpe_purchase_order_filter" model="ir.ui.view">
+            <field name="name">bpe.purchase.order.list.select</field>
+            <field name="model">purchase.order</field>
+        	<field name="inherit_id" ref="purchase.view_purchase_order_filter"/>
+            <field name="arch" type="xml">
+            	<field name="create_uid" position="after">
+            		<field name="user_checked_id" />
+            		<field name="user_approve_id" />
+            		<field name="rfq_no" />
+					<field name="rfq_date" />
+            	</field> 
+            	<filter name="not_invoiced" position="after">
+                    <filter icon="terp-personal-" string="My Check" name="filter_my_checked"  domain="[('user_checked_id','=', uid)]" help="My Checked Requisition"/>
+                    <filter icon="terp-personal-" string="My Approve" name="filter_my_approve" domain="[('user_approve_id','=', uid)]" help="My Approve Requisition"/>
+            	</filter>
+			</field>
+		</record>
+    
+    </data>
+</openerp>

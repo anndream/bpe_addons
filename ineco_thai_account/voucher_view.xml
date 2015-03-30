@@ -1,0 +1,548 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+
+		<!-- Voucher Select -->
+        <record model="ir.ui.view" id="view_ineco_voucher_tree">
+            <field name="name">ineco.voucher.tree</field>
+            <field name="model">account.voucher</field>
+            <field name="inherit_id" ref="account_voucher.view_voucher_tree"/>
+            <field name="arch" type="xml">
+            	<field name="period_id" position="after">
+            		<field name="period_tax_id" invisible="context.get('visible', True)" />
+            	</field>
+			</field>
+		</record>
+		
+		<!-- Sale receipt -->
+        <record model="ir.ui.view" id="view_ineco_account_voucher_form">
+	      	<field name="name">ineco.account.voucher.form</field>
+	      	<field name="model">account.voucher</field>
+	      	<field name="inherit_id" ref="account_voucher.view_sale_receipt_form"/>
+	      	<field name="arch" type="xml">
+	      	    <field name="date_due" position="replace">
+	      	   		<field name="date_due" />
+	      	    </field>
+	        	<xpath expr="//page[@string='Sales Information']" position="after" >
+	        	    <page string="General Ledger">
+	        	    	<field name="account_move_lines" readonly="1">
+	        	    		<tree string="General ledgers">
+	        	    			<field name="date" />
+								<field name="name" />
+								<field name="account_id" />
+								<field name="debit"  sum="Total Debit" />
+								<field name="credit" sum="Total Credit"/>
+								<field name="analytic_account_id" invisible="1" />
+								<field name="quantity" invisible="1" />
+	        	    		</tree>
+	        	    	</field>
+	        	    </page>
+	        	    <page string="Cheque" groups="ineco_thai_account.group_multiple_check">
+	        	    	<field name="cheque_ids" context="{'default_type':'in','default_partner_id': partner_id}" 
+	        	    		domain="[('type','=','in'),('state','=','draft'),('partner_id','=',partner_id)]" colspan="4" nolabel="1">
+			                <tree string="Banks">
+			                    <field name="name"/>
+			                    <field name="cheque_date"/>
+			                    <field name="cheque_date_reconcile" />
+			                    <field name="bank" />                    
+			                    <field name="partner_id" string="Customer" />
+			                    <field name="amount"/>     
+			                    <field name="state"/>           
+			                </tree>
+	        	    	</field>        	    
+	        	    </page>
+	        	    <page string="With Holding Tax">
+	        	    	<field name="wht_ids" attrs="{'readonly':[('state','=','posted')]}" 
+	        	    		   context="{'default_partner_id': partner_id or False, 'default_wht_type':'sale','default_date_doc': date }" >
+	        	    		<tree string="With Holding Tax">
+	        	    			<field name="seq" />
+	        	    			<field name="name" />
+	        	    			<field name="date_doc" />
+	        	    			<field name="base_amount" />
+	        	    			<field name="tax" />
+	        	    			<field name="state" />
+	        	    			<field name="note" />
+	        	    			<button name="button_compute_tax" string="Compute Tax" type="object" />
+	        	    		</tree>
+	        	    	</field>
+	        	    </page>
+	        	</xpath>
+				<field name="partner_id" position="after">
+			   		<field name="move_id" />
+			   		<field name="period_tax_id" />
+			   	</field>	        	     
+	        </field>
+		</record>    
+
+		<!-- Customer Payment -->
+        <record model="ir.ui.view" id="view_ineco_account_payment_form">
+	      	<field name="name">ineco.account.payment.form</field>
+	      	<field name="model">account.voucher</field>
+	      	<field name="inherit_id" ref="account_voucher.view_vendor_receipt_form"/>
+	      	<field name="arch" type="xml">
+		      	<field name="date" position="after">
+		      		<field name="date_due" />
+		      	</field>		      	  
+		      	<field name="period_id" position="after">
+		      		<field name="period_tax_id" />
+		      	</field>  
+		      	<xpath expr="//page[@string='Payment Information']" position="after" >       	    
+	        	    <page string="General Ledger">
+	        	    	<field name="account_move_lines" readonly="1">
+	        	    		<tree string="General ledgers">
+	        	    			<field name="date" />
+								<field name="name" />
+								<field name="account_id" />
+								<field name="debit"  sum="Total Debit" />
+								<field name="credit" sum="Total Credit"/>
+								<field name="analytic_account_id" invisible="1" />
+								<field name="quantity" invisible="1" />
+	        	    		</tree>
+	        	    	</field>
+	        	    </page>
+	        	    <page string="Template">
+	        	    	<group>
+	        	    		<group><field name="account_model_id" /></group>
+	        	    		<group><button name="button_loadtemplate" string="Load Template" type="object" /></group>
+	        	    	</group>
+	        	    	<field name="addline_ids">
+	        	    		<tree string="Template" editable="bottom">
+	        	    			<field name="account_id" />
+	        	    			<field name="account_name" />
+	        	    			<field name="debit" />
+	        	    			<field name="credit" />
+	        	    		</tree>
+	        	    	</field>
+	        	    </page>
+	        	    <page string="Cheque" groups="ineco_thai_account.group_multiple_check">
+	        	    	<field name="cheque_ids" context="{'default_type':'in','default_partner_id': partner_id}" 
+	        	    		domain="[('type','=','in'),('state','=','draft'),('partner_id','=',partner_id)]" colspan="4" nolabel="1">
+			                <tree string="Banks">
+			                    <field name="name"/>
+			                    <field name="cheque_date"/>
+			                    <field name="cheque_date_reconcile" />
+			                    <field name="bank" />                    
+			                    <field name="partner_id" string="Customer" />
+			                    <field name="amount"/>     
+			                    <field name="state"/>           
+			                </tree>
+	        	    	</field>        	    
+	        	    </page>
+	        	    <page string="With Holding Tax">
+	        	    	<field name="wht_ids" attrs="{'readonly':[('state','=','posted')]}" 
+	        	    		context="{'default_partner_id': partner_id or False, 'default_wht_type':'sale', 
+	        	    			'default_date_doc': date}" >
+	        	    		<tree string="With Holding Tax">
+	        	    			<field name="seq" />
+	        	    			<field name="name" />
+	        	    			<field name="date_doc" />
+	        	    			<field name="base_amount" />
+	        	    			<field name="tax" />
+	        	    			<field name="state" />
+	        	    			<field name="note" />
+	        	    			<button name="button_compute_tax" string="Compute Tax" type="object" />
+	        	    		</tree>
+	        	    	</field>
+	        	    </page>
+	        	</xpath>
+		        <field name="journal_id" position="after">
+		        	<field name="move_id" />
+		        	
+		        </field>
+		        <field name="name" position="after">
+		        	<field name="bill_number" />
+		        	<field name="receipt_number" />
+		        </field>	        	       	
+			</field>
+		</record>    
+		
+        
+	<!-- Search Voucher -->  
+	     
+        <record id="view_voucher_filter_vendor_ineco" model="ir.ui.view">
+            <field name="name">account.voucher.select</field>
+            <field name="model">account.voucher</field>
+			<field name="inherit_id" ref="account_voucher.view_voucher_filter_vendor"/>            
+            <field name="arch" type="xml">
+		      	<field name="number" position="after">
+		      		<field name="reference" string="Ref #"/>
+		      		<field name="period_tax_id" />
+		      	</field>	                
+            </field>
+        </record>
+
+        <record id="view_voucher_filter_vendor_pay_ineco" model="ir.ui.view">
+            <field name="name">account.voucher.select</field>
+            <field name="model">account.voucher</field>
+			<field name="inherit_id" ref="account_voucher.view_voucher_filter_vendor_pay"/>            
+            <field name="arch" type="xml">
+		      	<field name="number" position="after">
+		      		<field name="reference" string="Ref #"/>
+		      		<field name="period_tax_id" />
+		      	</field>	                
+            </field>
+        </record>        
+        
+        <record id="view_voucher_filter_customer_pay_ineco" model="ir.ui.view">
+            <field name="name">account.voucher.select</field>
+            <field name="model">account.voucher</field>
+			<field name="inherit_id" ref="account_voucher.view_voucher_filter_customer_pay"/>            
+            <field name="arch" type="xml">
+		      	<field name="number" position="after">
+		      		<field name="reference" string="Ref #"/>
+		      		<field name="period_tax_id" />
+		      	</field>	                
+            </field>
+        </record>        
+        
+        
+        <record id="view_voucher_filter_sale_ineco" model="ir.ui.view">
+            <field name="name">account.voucher.select</field>
+            <field name="model">account.voucher</field>
+			<field name="inherit_id" ref="account_voucher.view_voucher_filter_sale"/>            
+            <field name="arch" type="xml">
+		      	<field name="number" position="after">
+		      		<field name="reference" string="Ref #"/>
+		      		<field name="period_tax_id" />
+		      	</field>	                
+            </field>
+        </record>        
+		
+		<!-- Purchase receipt -->
+        <record model="ir.ui.view" id="view_ineco_account_supplierreceipt_form">
+	      	<field name="name">ineco.account.supplierreceipt.form</field>
+	      	<field name="model">account.voucher</field>
+	      	<field name="inherit_id" ref="account_voucher.view_purchase_receipt_form"/>
+	      	<field name="arch" type="xml">
+	      		<xpath expr="//page[@string='Bill Information']" position="after" > 
+	        	    <page string="General Ledger">
+	        	    	<field name="account_move_lines" readonly="1">
+	        	    		<tree string="General ledgers">
+	        	    			<field name="date" />
+								<field name="name" />
+								<field name="account_id" />
+								<field name="debit"  sum="Total Debit" />
+								<field name="credit" sum="Total Credit"/>
+								<field name="analytic_account_id" invisible="1" />
+								<field name="quantity" invisible="1" />
+	        	    		</tree>
+	        	    	</field>
+	        	    </page>
+	        	    <page string="Cheque" groups="ineco_thai_account.group_multiple_check">
+	        	    	<field name="cheque_ids" context="{'default_type':'out','default_partner_id': partner_id}" 
+	        	    		domain="[('type','=','out'),('state','=','draft'),('partner_id','=',partner_id)]" colspan="4" nolabel="1">
+			                <tree string="Banks">
+			                    <field name="name"/>
+			                    <field name="cheque_date"/>
+			                    <field name="cheque_date_reconcile" />
+			                    <field name="bank" />                    
+			                    <field name="partner_id" string="Supplier" />
+			                    <field name="amount"/>     
+			                    <field name="state"/>           
+			                </tree>
+	        	    	</field>        	    
+	        	    </page>
+	        	    <page string="With Holding Tax">
+	        	    	<field name="wht_ids" attrs="{'readonly':[('state','=','posted')]}" 
+	        	    		   context="{'default_partner_id': partner_id or False, 'default_wht_type':'purchase', 'default_date_doc': date }" >
+	        	    		<tree string="With Holding Tax">
+	        	    			<field name="seq" />
+	        	    			<field name="name" />
+	        	    			<field name="date_doc" />
+	        	    			<field name="base_amount" />
+	        	    			<field name="tax" />
+	        	    			<field name="state" />
+	        	    			<field name="note" />
+	        	    			<button name="button_compute_tax" string="Compute Tax" type="object" />
+	        	    		</tree>
+	        	    	</field>
+	        	    </page>
+	        	</xpath>
+		        <field name="partner_id" position="after">
+		        	<field name="move_id" />
+		        	<field name="period_tax_id" />
+		        </field>
+		        <field name="journal_id" position="before">
+		        	<field name="bill_number" string="Sup Invoice" />
+		        	<field name="receipt_number" />
+		        </field>		        	        	       		        	
+			</field>
+		</record>    
+
+		<!-- Supplier Payment -->
+        <record model="ir.ui.view" id="view_ineco_account_supplierpayment_form">
+	      	<field name="name">ineco.account.supplierpayment.form</field>
+	      	<field name="model">account.voucher</field>
+	      	<field name="inherit_id" ref="account_voucher.view_vendor_payment_form"/>
+	      	<field name="arch" type="xml">
+	      	    <field name="date" position="after">
+		      		<field name="date_due" />
+		      	</field>
+		      	<xpath expr="//page[@string='Payment Information']" position="after" > 
+	        	    <page string="General Ledger">
+	        	    	<field name="account_move_lines" readonly="1">
+	        	    		<tree string="General ledgers">
+	        	    			<field name="date" />
+								<field name="name" />
+								<field name="account_id" />
+								<field name="debit"  sum="Total Debit" />
+								<field name="credit" sum="Total Credit"/>
+								<field name="analytic_account_id" invisible="1" />
+								<field name="quantity" invisible="1" />
+	        	    		</tree>
+	        	    	</field>
+	        	    </page>
+	        	    <page string="Template">
+	        	    	<group>
+	        	    		<group><field name="account_model_id" /></group>
+	        	    		<group><button name="button_loadtemplate" string="Load Template" type="object" /></group>
+	        	    	</group>
+	        	    	<field name="addline_ids" colspan="4">
+	        	    		<tree string="Add Line" editable="bottom">
+	        	    			<field name="account_id" />
+	        	    			<field name="account_name" />
+	        	    			<field name="debit" />
+	        	    			<field name="credit" />
+	        	    		</tree>
+	        	    	</field>
+	        	    </page>
+	        	    <page string="Cheque" groups="ineco_thai_account.group_multiple_check">
+	        	    	<field name="cheque_ids" context="{'default_type':'out','default_partner_id': partner_id}" 
+	        	    		domain="[('type','=','out'),('state','=','draft'),('partner_id','=',partner_id)]" colspan="4" nolabel="1">
+			                <tree string="Banks">
+			                    <field name="name"/>
+			                    <field name="cheque_date"/>
+			                    <field name="cheque_date_reconcile" />
+			                    <field name="bank" />                    
+			                    <field name="partner_id" string="Supplier" />
+			                    <field name="amount"/>     
+			                    <field name="state"/>           
+			                </tree>
+	        	    	</field>        	    
+	        	    </page>
+	        	    <page string="With Holding Tax">
+	        	    	<field name="wht_ids" attrs="{'readonly':[('state','=','posted')]}" 
+	        	    		   context="{'default_partner_id': partner_id or False, 'default_wht_type':'purchase', 'default_date_doc': date }" >
+	        	    		<tree string="With Holding Tax">
+	        	    			<field name="seq" />
+	        	    			<field name="name" />
+	        	    			<field name="date_doc" />
+	        	    			<field name="base_amount" />
+	        	    			<field name="tax" />
+	        	    			<field name="state" />
+	        	    			<field name="note" />
+	        	    			<button name="button_compute_tax" string="Compute Tax" type="object" />
+	        	    		</tree>
+	        	    	</field>
+	        	    </page>
+	        	</xpath>
+		        <field name="journal_id" position="after">
+		        	<field name="move_id" />
+		        </field>	        	       		        	
+			</field>
+		</record>    
+        
+        <!-- Customer Payment By Cheque Receipt Date -->
+        <record id="view_ineco_customer_payment_receipt_calendar" model="ir.ui.view">
+            <field name="name">ineco.customer.payment.receipt.calendar</field>
+            <field name="model">account.voucher</field>
+            <field name="arch" type="xml">
+                <calendar string="Customer Payment By Receipt Date" color="partner_id" date_start="date_due">
+                    <field name="partner_id"/>
+                    <field name="amount"/>
+                </calendar>
+            </field>
+        </record>
+        
+        <record id="ineco_customer_payment_receipt_tree" model="ir.ui.view">
+            <field name="name">ineco.customer.payment.receipt.invoice.tree</field>
+            <field name="model">account.voucher</field>
+            <field name="arch" type="xml">
+                <tree colors="blue:state == 'draft';gray:state == 'cancel';red:audit" string="Voucher Entries">
+                    <field name="date_due"/>
+                    <field name="date"/>
+                    <field name="number"/>
+                    <field name="reference"/>
+                    <field name="partner_id"/>
+                    <field name="journal_id" groups="account.group_account_user"/>
+                    <field name="period_id" invisible="context.get('visible', True)"/>
+                    <field name="type" invisible="context.get('visible', True)"/>
+                    <field name="amount" sum="Total Amount"/>
+                    <field name="audit" invisible="1"/>
+                    <field name="state"/>
+                </tree>
+            </field>
+        </record>        
+        
+        <record id="action_ineco_customer_payment_receipt" model="ir.actions.act_window">
+            <field name="name">Receipt Date</field>
+            <field name="res_model">account.voucher</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form,calendar,graph</field>
+            <field name="view_id" ref="ineco_customer_payment_receipt_tree"/>
+            <field name="context">{'type':'receipt'}</field>
+            <field name="domain">[('date_due','!=',False),('type','=','receipt'),('state','!=','cancel')]</field>
+            <field name="search_view_id" ref="account_voucher.view_voucher_filter_customer_pay"/>
+        </record>
+        
+        <record id="action_ineco_customer_payment_receipt_tree" model="ir.actions.act_window.view">
+            <field eval="2" name="sequence"/>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="ineco_customer_payment_receipt_tree" />
+            <field name="act_window_id" ref="action_ineco_customer_payment_receipt"/>
+        </record>        
+        
+        <record id="action_ineco_customer_payment_receipt_form" model="ir.actions.act_window.view">
+            <field eval="3" name="sequence"/>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="account_voucher.view_vendor_receipt_form"/>
+            <field name="act_window_id" ref="action_ineco_customer_payment_receipt"/>
+        </record>         
+        
+        
+        <record id="action_ineco_customer_payment_receipt_calendar" model="ir.actions.act_window.view">
+            <field eval="1" name="sequence"/>
+            <field name="view_mode">calendar</field>
+            <field name="view_id" ref="view_ineco_customer_payment_receipt_calendar" />
+            <field name="act_window_id" ref="action_ineco_customer_payment_receipt"/>
+        </record>
+        
+		<menuitem action="action_ineco_customer_payment_receipt" id="menu_ineco_customer_payment_receipt" parent="menu_ineco_accounting_calendar" sequence="4"/>            
+        
+        
+        <!-- Customer Payment By Billing Date -->
+        <record id="view_ineco_customer_payment_billing_calendar" model="ir.ui.view">
+            <field name="name">ineco.customer.payment.billing.calendar</field>
+            <field name="model">account.voucher</field>
+            <field name="arch" type="xml">
+                <calendar string="Customer Payment By Billing Date" color="partner_id" date_start="date">
+                    <field name="partner_id"/>
+                    <field name="amount"/>
+                </calendar>
+            </field>
+        </record>
+        
+        <record id="ineco_customer_payment_billing_tree" model="ir.ui.view">
+            <field name="name">ineco.customer.payment.billing.invoice.tree</field>
+            <field name="model">account.voucher</field>
+            <field name="arch" type="xml">
+                <tree colors="blue:state == 'draft';gray:state == 'cancel';red:audit" string="Voucher Entries">
+                    <field name="date"/>
+                    <field name="date_due"/>
+                    <field name="number"/>
+                    <field name="reference"/>
+                    <field name="partner_id"/>
+                    <field name="journal_id" groups="account.group_account_user"/>
+                    <field name="period_id" invisible="context.get('visible', True)"/>
+                    <field name="type" invisible="context.get('visible', True)"/>
+                    <field name="amount" sum="Total Amount"/>
+                    <field name="audit" invisible="1"/>
+                    <field name="state"/>
+                </tree>
+            </field>
+        </record>        
+        
+        <record id="action_ineco_customer_payment_billing" model="ir.actions.act_window">
+            <field name="name">Billing Date</field>
+            <field name="res_model">account.voucher</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form,calendar,graph</field>
+            <field name="view_id" ref="ineco_customer_payment_receipt_tree"/>
+            <field name="context">{'type':'receipt'}</field>
+            <field name="domain">[('date','!=',False),('type','=','receipt'),('state','!=','cancel')]</field>
+            <field name="search_view_id" ref="account_voucher.view_voucher_filter_customer_pay"/>
+        </record>
+        
+        <record id="action_ineco_customer_payment_billing_tree" model="ir.actions.act_window.view">
+            <field eval="2" name="sequence"/>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="ineco_customer_payment_billing_tree" />
+            <field name="act_window_id" ref="action_ineco_customer_payment_billing"/>
+        </record>        
+        
+        <record id="action_ineco_customer_payment_billing_form" model="ir.actions.act_window.view">
+            <field eval="3" name="sequence"/>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="account_voucher.view_vendor_receipt_form"/>
+            <field name="act_window_id" ref="action_ineco_customer_payment_billing"/>
+        </record>         
+        
+        
+        <record id="action_ineco_customer_payment_billing_calendar" model="ir.actions.act_window.view">
+            <field eval="1" name="sequence"/>
+            <field name="view_mode">calendar</field>
+            <field name="view_id" ref="view_ineco_customer_payment_billing_calendar" />
+            <field name="act_window_id" ref="action_ineco_customer_payment_billing"/>
+        </record>
+        
+    	<menuitem action="action_ineco_customer_payment_billing" id="menu_ineco_customer_payment_billing" parent="menu_ineco_accounting_calendar" sequence="5"/> 
+        
+        <!-- Supplier Payment By Payment Date -->
+        <record id="view_ineco_supplier_payment_calendar" model="ir.ui.view">
+            <field name="name">ineco.supplier.payment.calendar</field>
+            <field name="model">account.voucher</field>
+            <field name="arch" type="xml">
+                <calendar string="Supplier Payment By Payment Date" color="partner_id" date_start="date_due">
+                    <field name="partner_id"/>
+                    <field name="amount"/>
+                </calendar>
+            </field>
+        </record>
+        
+        <record id="ineco_supplier_payment_tree" model="ir.ui.view">
+            <field name="name">ineco.supplier.payment.invoice.tree</field>
+            <field name="model">account.voucher</field>
+            <field name="arch" type="xml">
+                <tree colors="blue:state == 'draft';gray:state == 'cancel';red:audit" string="Voucher Entries">
+                    <field name="date_due"/>
+                    <field name="date"/>
+                    <field name="number"/>
+                    <field name="reference"/>
+                    <field name="partner_id"/>
+                    <field name="journal_id" groups="account.group_account_user"/>
+                    <field name="period_id" invisible="context.get('visible', True)"/>
+                    <field name="type" invisible="context.get('visible', True)"/>
+                    <field name="amount" sum="Total Amount"/>
+                    <field name="audit" invisible="1"/>
+                    <field name="state"/>
+                </tree>
+            </field>
+        </record>        
+        
+        <record id="action_ineco_supplier_payment" model="ir.actions.act_window">
+            <field name="name">Payment Date</field>
+            <field name="res_model">account.voucher</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form,calendar,graph</field>
+            <field name="view_id" ref="ineco_supplier_payment_tree"/>
+            <field name="context">{'type':'payment'}</field>
+            <field name="domain">[('date_due','!=',False),('type','=','payment'),('state','!=','cancel')]</field>
+            <field name="search_view_id" ref="account_voucher.view_voucher_filter_vendor_pay"/>
+        </record>
+        
+        <record id="action_ineco_supplier_payment_tree" model="ir.actions.act_window.view">
+            <field eval="2" name="sequence"/>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="ineco_supplier_payment_tree" />
+            <field name="act_window_id" ref="action_ineco_supplier_payment"/>
+        </record>        
+        
+        <record id="action_ineco_supplier_payment_form" model="ir.actions.act_window.view">
+            <field eval="3" name="sequence"/>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="account_voucher.view_vendor_payment_form"/>
+            <field name="act_window_id" ref="action_ineco_supplier_payment"/>
+        </record>         
+        
+        
+        <record id="action_ineco_supplier_payment_calendar" model="ir.actions.act_window.view">
+            <field eval="1" name="sequence"/>
+            <field name="view_mode">calendar</field>
+            <field name="view_id" ref="view_ineco_supplier_payment_calendar" />
+            <field name="act_window_id" ref="action_ineco_supplier_payment"/>
+        </record>
+        
+    	<menuitem action="action_ineco_supplier_payment" id="menu_ineco_supplier_payment" parent="menu_ineco_accounting_calendar" sequence="7"/>        
+
+  	</data>
+</openerp>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+        <record id="view_bpe_product_search" model="ir.ui.view">
+            <field name="name">bpe.product.product.search</field>
+            <field name="model">product.template</field>
+            <field name="inherit_id" ref="product.product_template_search_view"/>
+            <field name="arch" type="xml">
+                <field name="categ_id" position="after">
+                   <field name="default_code" string="Internal Reference"/>
+                </field>
+            </field>
+        </record>
+        
+        <record id="view_bpe_product_category_form" model="ir.ui.view">
+            <field name="name">bpe.product.category.form</field>
+            <field name="model">product.category</field>
+            <field name="inherit_id" ref="product.product_category_form_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//group[@name='parent']" position="inside">
+                	<group string="Sequence" colspan="2">
+                		<field name="sequence" string="Sequence"/>
+                	</group>
+                   
+                </xpath>
+            </field>
+        </record>
+
+   	</data>
+</openerp>

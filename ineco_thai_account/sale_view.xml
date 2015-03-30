@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+ 
+        <record model="ir.ui.view" id="view_ineco_account_sale_form">
+	      	<field name="name">ineco.account.sale.form</field>
+	      	<field name="model">sale.order</field>
+	      	<field name="inherit_id" ref="sale.view_order_form"/>
+	      	<field name="arch" type="xml">
+	      	
+	      		<field name="date_order" position="replace">
+	      			<field name="date_order_new" required="1" string="Order Date"/>
+	      			<field name="date_order" string="Delivery Date" />
+	      		</field>
+	        	
+	        	<field name="user_id" position="after">
+	        		<field name="ineco_sale_admin_id" />
+	        	</field>
+
+	            <xpath expr="//field[@name='order_line']/tree//field[@name='price_unit']" position="before">
+	                <field name="account_analytic_id" domain="[('type','=','normal')]" groups="analytic.group_analytic_accounting"/>
+	            </xpath>       	
+	        	
+	            <xpath expr="//field[@name='order_line']/form//field[@name='price_unit']" position="after">
+	                <field name="account_analytic_id" domain="[('type','=','normal')]" groups="analytic.group_analytic_accounting"/>
+	            </xpath>       	
+	        	
+	      	</field>
+	    </record>      
+		           	
+    </data>
+</openerp>

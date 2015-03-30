@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+
+        <record id="bpe_analytic_account_form" model="ir.ui.view">
+            <field name="name">bpe.analytic.account.form</field>
+            <field name="model">account.analytic.account</field>
+            <field name="inherit_id" ref="analytic.view_account_analytic_account_form"/>
+            <field eval="60" name="priority"/>
+            <field name="arch" type="xml">
+            	<field name="manager_id" position="after">
+            		<field name="department_id" />
+            		<field name="project" />
+            		<field name="close" />
+            	</field>
+			</field>
+		</record>
+		
+        <record id="bpe_analytic_account_tree" model="ir.ui.view">
+            <field name="name">bpe.analytic.account.tree</field>
+            <field name="model">account.analytic.account</field>
+            <field name="inherit_id" ref="account.view_account_analytic_account_tree"/>
+            <field name="arch" type="xml">
+            	<field name="code" position="before">
+            		<field name="department_id" />
+            		<field name="project" />
+            		<field name="close" />
+            	</field>
+			</field>
+		</record>
+		
+		
+			    
+	</data>
+</openerp>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data noupdate="1">
+        <!-- Sequences for RFQ --> 
+        <record id="seq_type_rfq" model="ir.sequence.type">
+            <field name="name">RFQ</field>
+            <field name="code">purchase.order.rfq</field>
+        </record>
+        <record id="seq_rfq" model="ir.sequence">
+            <field name="name">RFQ</field>
+            <field name="code">purchase.order.rfq</field>
+            <field name="prefix">RFQ-</field>
+            <field name="padding">5</field>
+        </record>
+        <!-- Sequences for TEMP PO --> 
+        <record id="seq_type_temp_po" model="ir.sequence.type">
+            <field name="name">Temp PO</field>
+            <field name="code">purchase.order.temp</field>
+        </record>
+        <record id="seq_temp_po" model="ir.sequence">
+            <field name="name">TEMP-PO</field>
+            <field name="code">purchase.order.temp</field>
+            <field name="prefix">TEMP-</field>
+            <field name="padding">7</field>
+        </record>
+    </data>
+</openerp>

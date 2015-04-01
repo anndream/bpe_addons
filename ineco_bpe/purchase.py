@@ -60,8 +60,8 @@ class purchase_order(osv.osv):
     def wkf_confirm_order(self, cr, uid, ids, context=None):
         todo = []
         for po in self.browse(cr, uid, ids, context=context):
-            new_po_no = self.pool.get('ir.sequence').get(cr, uid, 'purchase.order')
-            po.write({'name': new_po_no})
+            #new_po_no = self.pool.get('ir.sequence').get(cr, uid, 'purchase.order')
+            #po.write({'name': new_po_no})
             if not po.order_line:
                 raise osv.except_osv(_('Error!'),_('You cannot confirm a purchase order without any purchase order line.'))
             for line in po.order_line:
@@ -74,7 +74,8 @@ class purchase_order(osv.osv):
     
     def button_check(self,cr,uid,ids,context=None):
         for po in self.browse(cr,uid,ids):
-            po.write({'user_checked_id': uid,'date_checked': time.strftime('%Y-%m-%d %H:%M:%S')})
+            new_po_no = self.pool.get('ir.sequence').get(cr, uid, 'purchase.order')
+            po.write({'name': new_po_no, 'user_checked_id': uid,'date_checked': time.strftime('%Y-%m-%d %H:%M:%S')})
 
     def button_approve(self,cr,uid,ids,context=None):
         for po in self.browse(cr,uid,ids):

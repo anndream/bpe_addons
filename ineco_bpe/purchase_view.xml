@@ -104,16 +104,12 @@
 										attrs="{'invisible': [('date_checked','!=',False)]}" />
 								</div>
 								<div id="div_approve_zone">
-									<label for="div_approve_zone" string="Approve By" />
+									<label for="div_approve_zone" string="Confirm By" />
 									<field name="user_approve_id" required="1"
 										attrs="{'readonly': [('date_approve','!=',False)]}"/>
 									<field name="date_approve" readonly="1" />
-									<!-- 
-									<button name="button_approve" type="object" string="Approve" icon="terp-personal" 
+									<button name="button_approve" type="object" string="Confirm" icon="terp-personal" 
 										attrs="{'invisible': [('date_approve','!=',False)]}"/>
-                    				<button name="purchase_confirm" string="Approve" states="draft,bid" icon="terp-personal" 
-                    					attrs="{'invisible': [('date_approve','!=',False)]}" id="approve_confirm"/>
-									 -->
 								</div>
 							</group>
 						</group>
@@ -121,6 +117,14 @@
 					</page>
 	        	</xpath>
 	        	
+	        	<xpath expr="//button[@id='draft_confirm']" position="replace">
+                    <button name="purchase_confirm" states="draft" string="Confirm Order" id="draft_confirm" invisible="1"/>
+                </xpath>
+                
+                <xpath expr="//button[@id='bid_confirm']" position="replace">
+                    <button name="purchase_confirm" states="bid" string="Approve" class="oe_highlight" id="bid_confirm"/>
+                </xpath>
+	        	                    		
 	        	<button name="action_cancel_draft" position="replace">
 	        		<button name="action_cancel_draft" invisible="1" states="cancel,sent,confirmed" string="Set to Draft" type="object" />
 	        	</button>	        	

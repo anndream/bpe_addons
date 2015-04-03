@@ -69,7 +69,8 @@ class purchase_order(osv.osv):
                     todo.append(line.id)        
         self.pool.get('purchase.order.line').action_confirm(cr, uid, todo, context)
         for id in ids:
-            self.write(cr, uid, [id], {'state' : 'confirmed', 'validator' : uid, 'user_approve_id': uid,'date_approve': time.strftime('%Y-%m-%d %H:%M:%S')})
+            self.write(cr, uid, [id], {'state' : 'confirmed', 'validator' : uid, 
+                                       'user_approve_id': uid, 'date_approve': time.strftime('%Y-%m-%d %H:%M:%S')})
         return True
     
     def button_check(self,cr,uid,ids,context=None):

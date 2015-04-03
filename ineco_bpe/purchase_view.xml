@@ -84,6 +84,8 @@
 	        	<field name="fiscal_position" position="replace">
 	        		<field name="fiscal_position" invisible="1" />
 	        	</field>
+	        	
+	        	<field name="date_approve" position="replace" invisible="1" />
 	        
 	        	<xpath expr="//page[@string='Products']" position="after">
 					<page string="Additional &amp; Approval Area">
@@ -104,27 +106,38 @@
 										attrs="{'invisible': [('date_checked','!=',False)]}" />
 								</div>
 								<div id="div_approve_zone">
-									<label for="div_approve_zone" string="Confirm By" />
+									<label for="div_approve_zone" string="Confirm or Approve By" />
 									<field name="user_approve_id" required="1"
 										attrs="{'readonly': [('date_approve','!=',False)]}"/>
 									<field name="date_approve" readonly="1" />
 									<button name="button_approve" type="object" string="Confirm" icon="terp-personal" 
-										attrs="{'invisible': [('date_approve','!=',False)]}"/>
+										attrs="{'invisible': [('date_approve','!=',False)]}"
+										groups="purchase.group_purchase_manager" />
 								</div>
 							</group>
 						</group>
 						
 					</page>
 	        	</xpath>
-	        	
+
 	        	<xpath expr="//button[@id='draft_confirm']" position="replace">
-                    <button name="purchase_confirm" states="draft" string="Confirm Order" id="draft_confirm" invisible="1"/>
+                    <button name="purchase_confirm" 
+                    	states="draft" 
+                    	string="Approve PO" id="draft_confirm" 
+                    	attrs="{'invisible': ['|',('date_approve','=',False),('state','approved')]}"
+                    	            
+                    />
                 </xpath>
                 
                 <xpath expr="//button[@id='bid_confirm']" position="replace">
-                    <button name="purchase_confirm" states="bid" string="Approve" class="oe_highlight" id="bid_confirm"/>
+                    <button name="purchase_confirm"
+                    	string="Approve PO2" class="oe_highlight" 
+                    	id="bid_confirm"
+                    	attrs="{'invisible': [('date_approve','!=',False)]}"
+                    	groups="base.group_bpe_po_approval"
+                    />
                 </xpath>
-	        	                    		
+
 	        	<button name="action_cancel_draft" position="replace">
 	        		<button name="action_cancel_draft" invisible="1" states="cancel,sent,confirmed" string="Set to Draft" type="object" />
 	        	</button>	        	

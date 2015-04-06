@@ -135,11 +135,22 @@ class purchase_requisition(osv.osv):
         return {'value': value, 'domain': domain}
 
 class purchase_requisition_line(osv.osv):
+
+    def _product_unit_category (self,cr,uid,ids,context=None):
+        res = {
+            uom_category_id: False
+        }
+        for line in self.browse(cr,uid,ids):
+            res[line.id]['uom_category_id'] = line.product_id.uom_id.category_id.id
+        return res
+
     _inherit = "purchase.requisition.line"
     _description = "Purchase Requisition Line"
     _columns = {
         'cost': fields.float('Price Unit', digits=(12,2)),
         'note': fields.char('Note', size=254),
+        #'uom_category_id': fields.function(_product_unit_category, type="many2one", 
+        #                        string='Uom Category', relation="uom.category", multi='_uom_category'),                
     }
     _defaults = {
         'cost': 1.0,
@@ -153,13 +164,15 @@ class purchase_requisition_line(osv.osv):
         @return:  Dictionary of changed values
         """
         value = {'product_uom_id': ''}
+        domain = {}
         if product_id:
             prod = self.pool.get('product.product').browse(cr, uid, product_id, context=context)
             value = {'product_uom_id': prod.uom_id.id, 'product_qty': 1.0,'cost': prod.standard_price or 0.0}
+            domain = {'product_uom_id': [('category_id','=',prod.uom_id.category_id.id)]}
         if not analytic_account:
             value.update({'account_analytic_id': parent_analytic_account})
         if not date:
             value.update({'schedule_date': parent_date})
-        return {'value': value}
+        return {'value': value,'domain':domain}
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

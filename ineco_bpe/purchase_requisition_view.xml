@@ -35,10 +35,11 @@
                 	<field name="account_analytic_id" invisible="1" />       
 				</xpath>
 				
+				<!-- 
 				<button name="tender_reset" position="replace">
 					<button name="tender_reset" states="cancel" string="Reset to Draft" type="object" invisible="1" />
 				</button>
-				
+				 -->
 				
 				<xpath expr="//page[@string='Products']" position="after">
 					<page string="Additional &amp; Approval Area">

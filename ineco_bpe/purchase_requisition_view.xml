@@ -29,6 +29,7 @@
                 <xpath 	expr="//field[@name='line_ids']/tree/field[@name='product_uom_id']" position="after" >
                 	<field name="cost" />  
                 	<field name="note" string="Remark" />       
+                	<field name="rfq_ready" />
 				</xpath>
 
                 <xpath 	expr="//field[@name='line_ids']/tree/field[@name='account_analytic_id']" position="replace" >
@@ -123,6 +124,7 @@
 	        	<field name="user_id" position="after">
 					<field name="user_checked_id" />
 					<field name="user_approve_id" />
+					<field name="rfq_ready" />
 				</field>
 			</field>
 		</record>
@@ -133,6 +135,7 @@
         	<field name="inherit_id" ref="purchase_requisition.view_purchase_requisition_filter"/>
 	        <field name="arch" type="xml">
 	        	<field name="user_id" position="before">
+                    <filter icon="terp-personal-" string="RFQ Waiting" name="filter_rfq_waiting" domain="[('rfq_ready','!=', True),('state','not in',['cancel'])]" help="RFQ Waiting"/>
                     <filter icon="terp-personal-" string="My Check" name="filter_my_checked"  domain="[('user_checked_id','=', uid)]" help="My Checked Requisition"/>
                     <filter icon="terp-personal-" string="My Approve" name="filter_my_approve" domain="[('user_approve_id','=', uid)]" help="My Approve Requisition"/>
 	        	</field>

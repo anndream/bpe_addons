@@ -37,6 +37,40 @@ class ineco_job_type(osv.osv):
     ]
 
 class purchase_requisition(osv.osv):
+
+    def _get_purchase_order(self, cr, uid, ids, context=None):
+        result = {}
+        for po in self.pool.get('purchase.order').browse(cr, uid, ids, context=context):
+            result[po.requisition_id.id] = True
+        return result.keys()
+
+    def _get_requisition_line(self, cr, uid, ids, context=None):
+        result = {}
+        for line in self.pool.get('purchase.requisition.line').browse(cr, uid, ids, context=context):
+            result[line.requisition_id.id] = True
+        return result.keys()
+
+    def _get_ready_product (self,cr,uid,ids,name,arg,context=None):
+        res =  {}
+        for pr in self.browse(cr, uid, ids):
+            res[pr.id] = {
+                'rfq_ready': False
+            }
+            sql = """
+                select count(*) from purchase_requisition_line prl
+                where requisition_id = %s and (rfq_ready = False or rfq_ready is null)
+            """
+            cr.execute(sql % (pr.id))
+            output = cr.fetchone()
+            if output and output[0] == 0.0:
+                if pr.state == 'cancel':
+                    res[pr.id]['rfq_ready'] = False
+                else:
+                    res[pr.id]['rfq_ready'] = True
+            else:
+                res[pr.id]['rfq_ready'] = False
+        return res
+    
     _inherit = "purchase.requisition"
     _columns = {
         'user_approve_id': fields.many2one('res.users','Approval By', required=True, track_visibility='onchange'),
@@ -49,6 +83,13 @@ class purchase_requisition(osv.osv):
         'additional_requirement_other': fields.boolean('Other'),
         'additional_other': fields.char('Other',size=128),
         'job_type_id': fields.many2one('ineco.job.type','Type of Order',required=True, track_visibility='onchange', ondelete='restrict'),
+        'rfq_ready': fields.function(_get_ready_product, method=True, type='boolean', string="RFQ Ready",
+            store={
+                'purchase.requisition': (lambda self, cr, uid, ids, c={}: ids, [], 10),
+                'purchase.requisition.line': (_get_requisition_line, [], 10),
+                'purchase.order': (_get_purchase_order, [], 10),
+            },
+            multi='_rfq_ready'),
     }
     _defaults = {
         'additional_requirement_manual': False,
@@ -172,24 +213,55 @@ class purchase_requisition(osv.osv):
 
 class purchase_requisition_line(osv.osv):
 
-    def _product_unit_category (self,cr,uid,ids,context=None):
-        res = {
-            uom_category_id: False
-        }
-        for line in self.browse(cr,uid,ids):
-            res[line.id]['uom_category_id'] = line.product_id.uom_id.category_id.id
+    def _get_ready_product (self,cr,uid,ids,name,arg,context=None):
+        res =  {}
+        for line in self.browse(cr, uid, ids):
+            res[line.id] = {
+                'rfq_ready': False
+            }
+            if line.product_id:
+                sql = """
+                    select product_id from purchase_order po
+                    join purchase_order_line pol on po.id = pol.order_id
+                    where requisition_id = %s and product_id = %s and po.state not in ('cancel')
+                """
+                cr.execute(sql % (line.requisition_id.id, line.product_id.id))
+                output = cr.fetchone()
+                if output and output[0]:
+                    res[line.id]['rfq_ready'] = True
+                else:
+                    res[line.id]['rfq_ready'] = False
         return res
+
+    def _get_purchase_order(self, cr, uid, ids, context=None):
+        result = {}
+        for po in self.pool.get('purchase.order').browse(cr, uid, ids, context=context):
+            for line in po.requisition_id.line_ids:
+                result[line.id] = True
+        return result.keys()
+
+    def _get_requisition(self, cr, uid, ids, context=None):
+        result = {}
+        for pr in self.pool.get('purchase.requisition').browse(cr, uid, ids, context=context):
+            for line in pr.line_ids:
+                result[line.id] = True
+        return result.keys()
 
     _inherit = "purchase.requisition.line"
     _description = "Purchase Requisition Line"
     _columns = {
-        'cost': fields.float('Price Unit', digits=(12,2)),
+        'cost': fields.float('Price Unit', digits=(12,4)),
         'note': fields.char('Note', size=254),
-        #'uom_category_id': fields.function(_product_unit_category, type="many2one", 
-        #                        string='Uom Category', relation="uom.category", multi='_uom_category'),                
+        'rfq_ready': fields.function(_get_ready_product, method=True, type='boolean', string="RFQ Ready",
+            store={
+                'purchase.requisition.line': (lambda self, cr, uid, ids, c={}: ids, [], 10),
+                'purchase.requisition': (_get_requisition, [], 10),
+                'purchase.order': (_get_purchase_order, [], 10),
+            },
+            multi='_rfq_ready'),
     }
     _defaults = {
-        'cost': 1.0,
+        'cost': 1.0000,
         'note': False,
     }
     

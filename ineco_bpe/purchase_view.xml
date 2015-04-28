@@ -177,6 +177,9 @@
                     <filter icon="terp-personal-" string="My Check" name="filter_my_checked"  domain="[('user_checked_id','=', uid)]" help="My Checked Requisition"/>
                     <filter icon="terp-personal-" string="My Approve" name="filter_my_approve" domain="[('user_approve_id','=', uid)]" help="My Approve Requisition"/>
             	</filter>
+            	<filter string="Expected Month" position="after">
+                    <filter icon="terp-personal-" string="Status" name="group_status" domain="[]" context="{'group_by':'state'}" help="Status"/>
+            	</filter>
 			</field>
 		</record>
 

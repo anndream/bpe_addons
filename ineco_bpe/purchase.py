@@ -81,4 +81,16 @@ class purchase_order(osv.osv):
     def button_approve(self,cr,uid,ids,context=None):
         for po in self.browse(cr,uid,ids):
             po.write({'user_approve_id': uid,'date_approve': time.strftime('%Y-%m-%d %H:%M:%S')})
-    
+
+    def action_cancel_draft(self, cr, uid, ids, context=None):
+        if not len(ids):
+            return False
+        self.write(cr, uid, ids, {'state':'draft','shipped':0,'date_approve': False,'date_checked': False})
+        self.set_order_line_status(cr, uid, ids, 'draft', context=context)
+        for p_id in ids:
+            # Deleting the existing instance of workflow for PO
+            self.delete_workflow(cr, uid, [p_id]) # TODO is it necessary to interleave the calls?
+            self.create_workflow(cr, uid, [p_id])
+        return True
+
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:    

@@ -95,6 +95,32 @@ class purchase_requisition(osv.osv):
             'user_checked_id': user_checked_id,
             'payment_term_id': supplier.property_supplier_payment_term and supplier.property_supplier_payment_term.id or False, 
         }
+
+    def _prepare_purchase_order_line(self, cr, uid, requisition, requisition_line, purchase_id, supplier, context=None):
+        if context is None:
+            context = {}
+        po_line_obj = self.pool.get('purchase.order.line')
+        product_uom = self.pool.get('product.uom')
+        product = requisition_line.product_id
+        default_uom_po_id = product.uom_po_id.id
+        ctx = context.copy()
+        ctx['tz'] = requisition.user_id.tz
+        date_order = requisition.ordering_date and fields.date.date_to_datetime(self, cr, uid, requisition.ordering_date, context=ctx) or fields.datetime.now()
+        qty = product_uom._compute_qty(cr, uid, requisition_line.product_uom_id.id, requisition_line.product_qty, default_uom_po_id)
+        supplier_pricelist = supplier.property_product_pricelist_purchase and supplier.property_product_pricelist_purchase.id or False
+        vals = po_line_obj.onchange_product_id(
+            cr, uid, [], supplier_pricelist, product.id, qty, default_uom_po_id,
+            supplier.id, date_order=date_order,
+            fiscal_position_id=supplier.property_account_position,
+            date_planned=requisition_line.schedule_date,
+            name=False, price_unit=False, state='draft', context=context)['value']
+        vals.update({
+            'order_id': purchase_id,
+            'product_id': product.id,
+            'account_analytic_id': requisition_line.account_analytic_id.id,
+            'name': requisition_line.note or '-',
+        })
+        return vals
     
     def button_check(self,cr,uid,ids,context=None):
         for pr in self.browse(cr,uid,ids):

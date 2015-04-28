@@ -102,9 +102,7 @@ class purchase_requisition(osv.osv):
 
     def tender_reset(self, cr, uid, ids, context=None):
         self.write(cr, uid, ids, {'state': 'draft',
-                                  'user_approve_id': False,
                                   'date_approve': False,
-                                  'user_checked_id': False,
                                   'date_checked': False})
         for p_id in ids:
             # Deleting the existing instance of workflow for PO

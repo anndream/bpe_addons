@@ -100,6 +100,18 @@ class purchase_requisition(osv.osv):
         for pr in self.browse(cr,uid,ids):
             pr.write({'user_checked_id': uid,'date_checked': time.strftime('%Y-%m-%d %H:%M:%S')})
 
+    def tender_reset(self, cr, uid, ids, context=None):
+        self.write(cr, uid, ids, {'state': 'draft',
+                                  'user_approve_id': False,
+                                  'date_approve': False,
+                                  'user_checked_id': False,
+                                  'date_checked': False})
+        for p_id in ids:
+            # Deleting the existing instance of workflow for PO
+            self.delete_workflow(cr, uid, [p_id])
+            self.create_workflow(cr, uid, [p_id])
+        return True
+
     #Approve PR
     def tender_in_progress(self, cr, uid, ids, context=None):
         return self.write(cr, uid, ids, {'state': 'in_progress', 'user_approve_id': uid, 'date_approve': time.strftime('%Y-%m-%d %H:%M:%S')}, context=context)

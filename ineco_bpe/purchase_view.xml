@@ -202,6 +202,13 @@
               </p>
             </field>
         </record>
+
+        <record id="purchase.act_sent" model="workflow.activity">
+            <field name="wkf_id" ref="purchase.purchase_order"/>
+            <field name="name">sent</field>
+            <field name="kind">function</field>
+            <field name="action">write({'state':'draft'})</field>
+        </record>
     
     </data>
 </openerp>

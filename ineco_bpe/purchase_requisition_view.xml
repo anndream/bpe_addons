@@ -41,6 +41,10 @@
 					<button name="tender_reset" states="cancel" string="Reset to Draft" type="object" invisible="1" />
 				</button>
 				 -->
+				<button name="sent_suppliers" position="replace">
+					<button name="sent_suppliers" string="Confirm PR" icon="terp-personal" 
+						attrs="{'invisible': ['|',('date_checked','=',False),('state','!=','draft')]}" class="oe_highlight"/>
+				</button>
 				
 				<xpath expr="//page[@string='Products']" position="after">
 					<page string="Additional &amp; Approval Area">

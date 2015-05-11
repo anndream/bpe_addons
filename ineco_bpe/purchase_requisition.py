@@ -108,6 +108,14 @@ class purchase_requisition(osv.osv):
         #self.message_post(cr, uid, [order], body=_("RFQ created"), context=context)
         return order
 
+    def copy(self, cr, uid, id, default=None, context=None):
+        if default is None:
+            default = {}
+        template = self.browse(cr, uid, id, context=context)
+        default['date_approve'] = False
+        default['date_checked'] = False
+        return super(purchase_requisition, self).copy(cr, uid, id, default=default, context=context)
+
     def _prepare_purchase_order(self, cr, uid, requisition, supplier, context=None):
         supplier_pricelist = supplier.property_product_pricelist_purchase
         emp_ids = self.pool.get('hr.employee').search(cr, uid, [('user_id','=',uid)])

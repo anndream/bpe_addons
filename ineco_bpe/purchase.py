@@ -89,7 +89,7 @@ class purchase_order(osv.osv):
     def action_cancel_draft(self, cr, uid, ids, context=None):
         if not len(ids):
             return False
-        self.write(cr, uid, ids, {'state':'draft', 'shipped':0, 'date_approve': False})
+        self.write(cr, uid, ids, {'state':'draft', 'shipped':0, 'date_approve': False, 'date_checked': False})
         self.set_order_line_status(cr, uid, ids, 'draft', context=context)
         for p_id in ids:
             # Deleting the existing instance of workflow for PO

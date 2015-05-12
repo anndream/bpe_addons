@@ -39,6 +39,7 @@ class purchase_order(osv.osv):
         'date_checked': fields.datetime('Date Checked', track_visibility='onchange'),
         'rfq_no': fields.char('RFQ No', size=32, track_visibility='onchange'),
         'rfq_date': fields.date('RFQ Date', track_visibility='onchange'),
+        'internal_number': fields.char('Internal Number', size=32),
     }
     _defaults = {
         'additional_requirement_manual': False,
@@ -75,7 +76,10 @@ class purchase_order(osv.osv):
     
     def button_check(self,cr,uid,ids,context=None):
         for po in self.browse(cr,uid,ids):
-            new_po_no = self.pool.get('ir.sequence').get(cr, uid, 'purchase.order')
+            if not po.internal_number:
+                new_po_no = self.pool.get('ir.sequence').get(cr, uid, 'purchase.order')
+            else:
+                new_po_no = po.name ;
             po.write({'name': new_po_no, 'user_checked_id': uid,'date_checked': time.strftime('%Y-%m-%d %H:%M:%S')})
 
     def button_approve(self,cr,uid,ids,context=None):

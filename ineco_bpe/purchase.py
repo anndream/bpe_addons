@@ -46,7 +46,7 @@ class purchase_order(osv.osv):
         'additional_requirement_certificate': False,
         'additional_requirement_other': False,
         'rfq_no': lambda obj, cr, uid, context: obj.pool.get('ir.sequence').get(cr, uid, 'purchase.order.rfq'),
-        'rfq_date': time.strftime('%Y-%m-%d'),
+        'rfq_date': fields.date.context_today, #time.strftime('%Y-%m-%d'),
     }
     _order = 'name desc'
 

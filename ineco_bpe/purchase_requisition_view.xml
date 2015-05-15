@@ -98,7 +98,7 @@
 				</xpath>
 				
 	        	<field name="ordering_date" position="replace">
-	        		<field name="ordering_date" string="Date Order" />
+	        		<field name="ordering_date" string="Date Order" readonly="1" />
 	        	</field>
 	        	<field name="date_end" position="replace">
 	        		<field name="date_end" string="Date Required" />

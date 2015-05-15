@@ -103,6 +103,7 @@ class purchase_requisition(osv.osv):
     def create(self, cr, uid, vals, context=None):
         if vals.get('name','/')=='/':
             vals['name'] = self.pool.get('ir.sequence').get(cr, uid, 'purchase.order.requisition') or '/'
+        vals['ordering_date'] = time.strftime("%Y-%m-%d")
         context = dict(context or {}, mail_create_nolog=True)
         order =  super(purchase_requisition, self).create(cr, uid, vals, context=context)
         #self.message_post(cr, uid, [order], body=_("RFQ created"), context=context)

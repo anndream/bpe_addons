@@ -43,7 +43,7 @@
 				 -->
 				<button name="sent_suppliers" position="replace">
 					<button name="sent_suppliers" string="Confirm PR" icon="terp-personal" 
-						attrs="{'invisible': [('date_checked','=',False)]}" class="oe_highlight"/>
+						attrs="{'invisible': ['|',('date_checked','=',False),'&amp;',('date_checked','!=',False),('state','!=','draft')]}" class="oe_highlight"/>
 				</button>
 				
 				<xpath expr="//page[@string='Products']" position="after">

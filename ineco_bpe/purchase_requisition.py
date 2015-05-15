@@ -96,7 +96,7 @@ class purchase_requisition(osv.osv):
         'additional_requirement_certificate': False,
         'additional_requirement_other': False,
         'type_of_requirement': 'normal',
-        'ordering_date': time.strftime('%Y-%m-%d'),
+        'ordering_date': fields.date.context_today ,  #time.strftime('%Y-%m-%d'),
         'name': '/',
     }
 

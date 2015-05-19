@@ -80,7 +80,7 @@ class purchase_order(osv.osv):
                 new_po_no = self.pool.get('ir.sequence').get(cr, uid, 'purchase.order')
             else:
                 new_po_no = po.name ;
-            po.write({'name': new_po_no, 'user_checked_id': uid,'date_checked': time.strftime('%Y-%m-%d %H:%M:%S')})
+            po.write({'name': new_po_no, 'user_checked_id': uid,'date_checked': time.strftime('%Y-%m-%d %H:%M:%S'),'internal_number': new_po_no})
 
     def button_approve(self,cr,uid,ids,context=None):
         for po in self.browse(cr,uid,ids):

@@ -235,7 +235,7 @@ class sale_order_line_estimate(osv.osv):
             context = {}
         for line in self.browse(cr, uid, ids, context=context):
             res[line.id] = {
-                'cost_plus': line.cost * line.cost_rate,
+                'cost_plus': line.cost * 100 / (100 - line.cost_rate),
                 'unit_price': line.cost + (line.cost * line.cost_rate),
                 'estimate_cost': line.cost * line.quantity ,
                 'total_cost': ((line.cost + (line.cost * line.cost_rate)) * line.quantity) + line.mod_demod,
@@ -285,6 +285,7 @@ class sale_order_line_estimate(osv.osv):
         'mod_demod': fields.float('MOD/DEMOD'),
         'remark': fields.char('Remark', size=64),        
         'categ_id': fields.related('product_id','categ_id', type='many2one', relation="product.category", string='Category', readonly=True),
+        'supplier_id': fields.many2one('res.partner', 'Supplier', domain = [('supplier','=',True)]),
     }
     _order = 'breakdown_id, sequence'
 
@@ -313,7 +314,7 @@ class sale_order_line_estimate(osv.osv):
         unit_price = vals.get('unit_price',0.0) 
         estimate_cost = vals.get('estimate_cost',0.0) 
         total_cost = vals.get('total_cost',0.0) 
-        cost_plus = cost * cost_rate
+        cost_plus = cost * 100 / (100 - cost_rate)
         unit_price = cost + cost_plus
         estimate_cost = cost * quantity
         total_cost = (unit_price * quantity) + mod_demod
@@ -321,12 +322,36 @@ class sale_order_line_estimate(osv.osv):
         order =  super(sale_order_line_estimate, self).create(cr, uid, vals, context=context)
         return order
 
-    def onchange_product_id(self, cr, uid, ids, product_id, product_name, context=None):
+    def onchange_product_id(self, cr, uid, ids, product_id, product_name, supplier_id, context=None):
         value = {'name': False}
         domain = {}
+        supplier_product_obj = self.pool.get('product.supplierinfo')
+        delay = False
         if product_id and not product_name:
             product = self.pool.get('product.product').browse(cr, uid, product_id)
-            value.update({'name': product.name,'uom_id':product.uom_id.id,'cost': product.standard_price })
+            if supplier_id:
+                supplier_ids = supplier_product_obj.search(cr, uid, [('product_tmpl_id','=',product.product_tmpl_id.id),
+                                                      ('name','=',supplier_id)])
+                if supplier_ids:
+                    supplier_obj = supplier_product_obj.browse(cr ,uid, supplier_ids)
+                    delay = supplier_obj[0].delay
+            value.update({'name': product.name,'uom_id':product.uom_id.id,'cost': product.standard_price, 'delivery_time': delay })
+        return {'value': value, 'domain': domain}
+
+    def onchange_supplier_id(self, cr, uid, ids, product_id, supplier_id, context=None):
+        value = {}
+        domain = {}
+        supplier_product_obj = self.pool.get('product.supplierinfo')
+        delay = False
+        if product_id:
+            product = self.pool.get('product.product').browse(cr, uid, product_id)
+            if supplier_id:
+                supplier_ids = supplier_product_obj.search(cr, uid, [('product_tmpl_id','=',product.product_tmpl_id.id),
+                                                      ('name','=',supplier_id)])
+                if supplier_ids:
+                    supplier_obj = supplier_product_obj.browse(cr ,uid, supplier_ids)
+                    delay = supplier_obj[0].delay
+            value.update({'cost': product.standard_price, 'delivery_time': delay })
         return {'value': value, 'domain': domain}
 
     def onchange_price(self, cr, uid, ids, cost=0.0, cost_rate=0.0, quantity=0.0, mod_demod=0.0 , context=None):
@@ -336,7 +361,7 @@ class sale_order_line_estimate(osv.osv):
         """
         value = {}
         domain = {}
-        cost_plus = cost * cost_rate
+        cost_plus = cost * 100 / (100 - cost_rate)
         unit_price = cost + cost_plus
         estimate_cost = cost * quantity
         total_cost = (unit_price * quantity) + mod_demod

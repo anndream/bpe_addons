@@ -124,6 +124,7 @@
 					                                        	<tree string="Estimate" >
 					                                        		<field name="sequence" />
 					                                        		<field name="product_id" />
+                                                                    <field name="supplier_id" />
 					                                        		<field name="name" />
 					                                        		<field name="categ_id" />
 					                                        		<field name="uom_id" />
@@ -136,7 +137,8 @@
 					                                        		<group>
 					                                        			<group string="Estimate">
 							                                        		<field name="sequence" />
-							                                        		<field name="product_id" on_change="onchange_product_id(product_id, name)" />
+							                                        		<field name="product_id" on_change="onchange_product_id(product_id, name, supplier_id)" />
+                                                                            <field name="supplier_id" domain="[('supplier','=',True)]" on_change="onchange_supplier_id(product_id, supplier_id)" />
 							                                        		<field name="name" />
 							                                        		<field name="uom_id" />
 							                                        		<field name="quantity" on_change="onchange_price(cost,cost_rate,quantity,mod_demod)" />

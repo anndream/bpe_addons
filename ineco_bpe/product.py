@@ -2,7 +2,7 @@
 ##############################################################################
 #
 #    OpenERP, Open Source Management Solution
-#    Copyright (C) 2014 INECO Part., Ltd. (<http://www.ineco.co.th>).
+#    Copyright (C) 2004-2010 Tiny SPRL (<http://tiny.be>).
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -19,10 +19,22 @@
 #
 ##############################################################################
 
-import purchase_requisition
-import purchase
-import account
-import hr
-import res_users
-import sale
-import product
+
+from openerp.osv import osv, fields, expression
+
+class product_template(osv.osv):
+
+    def _check_duplicate_code(self, cr, uid, ids, context=None):
+        for id in ids:
+            print "Checking"
+            product = self.read(cr, uid, id, ['default_code'], context=context)
+            product_code = product['default_code']
+            product_ids = self.search(cr, uid, [('default_code','=',product_code)])
+            target_ids = product_ids.remove(id)
+            if target_ids:
+                return True
+        return False
+
+    inherit = 'product.template'
+
+    _constraints = [(_check_duplicate_code, 'You assgined code duplicate.', ['default_code'])]

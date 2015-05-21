@@ -33,9 +33,12 @@ class sale_order(osv.osv):
     _description = "BPE Sales Order"
 
     _columns = {
+        'origin': fields.text('Source Document', help="Reference of the document that generated this sales order request."),
         'rev': fields.char('Revision', size=32, required=True),
         'subject': fields.char('Subject', size=254, required=True),
         'refer': fields.char('Job Refer', size=254, required=True),
+        'sale_remark_id': fields.many2one('sale.order.remark','Remarks'),
+        'sale_document_ids': fields.many2many('sale.order.document.require','sale_order_document_rel','sale_order_id','document_id','Document Required'),
     }
 
     _defaults = {
@@ -64,3 +67,29 @@ class sale_order_line(osv.osv):
         'price_unit': fields.float('Unit Price', required=True, digits_compute= dp.get_precision('Product Price'), readonly=True, states={'draft': [('readonly', False)]}),
         'price_subtotal': fields.function(_amount_line, string='Subtotal', digits_compute= dp.get_precision('Account')),
     }
+
+class sale_order_remark(osv.osv):
+    _name = 'sale.order.remark'
+    _columns = {
+        'name': fields.char('Reamrk Description', size=254, required=True)
+    }
+    _order = 'name'
+    _defaults = {
+        'name': False,
+    }
+    _sql_constraints = [
+        ('name_unique', 'unique (name)', 'Remark must be unique!')
+    ]
+
+class sale_order_document_require(osv.osv):
+    _name = 'sale.order.document.require'
+    _columns = {
+        'name': fields.char('Document Name', size=254, required=True)
+    }
+    _order = 'name'
+    _defaults = {
+        'name': False,
+    }
+    _sql_constraints = [
+        ('name_unique', 'unique (name)', 'Document Required must be unique!')
+    ]

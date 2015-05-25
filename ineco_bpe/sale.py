@@ -39,6 +39,8 @@ class sale_order(osv.osv):
         'refer': fields.char('Job Refer', size=254, required=True),
         'sale_remark_id': fields.many2one('sale.order.remark','Remarks'),
         'sale_document_ids': fields.many2many('sale.order.document.require','sale_order_document_rel','sale_order_id','document_id','Document Required'),
+        'user_approve_id': fields.many2one('res.users','Approval By', track_visibility='onchange'),
+        'date_approve': fields.datetime('Date Approval', track_visibility='onchange'),
     }
 
     _defaults = {
@@ -46,6 +48,26 @@ class sale_order(osv.osv):
         'subject': False,
         'refer': False,
     }
+
+    def onchange_user_id(self, cr, uid, ids, user_id, context=None):
+        """ Changes UoM and name if product_id changes.
+        @param user_id: User
+        @return:  Dictionary of changed values
+        """
+        value = {'user_approve_id': False}
+        group = self.pool.get('res.groups').browse(cr, uid, [10])
+        domain_approve_ids = [x.id for x in group.users]
+        domain_approve_ids.remove(1)
+        domain = {}
+        if user_id:
+            emp_ids = self.pool.get('hr.employee').search(cr, uid, [('user_id','=',user_id)])
+            employee = self.pool.get('hr.employee').browse(cr, uid, emp_ids)
+            if employee.parent_id and employee.parent_id.user_id :
+                value.update({'user_approve_id': employee.parent_id.user_id.id })
+            if employee.department_id:
+                domain = {'user_approve_id': [('id','in',domain_approve_ids)]}
+        return {'value': value, 'domain': domain}
+
 
 class sale_order_line(osv.osv):
 
@@ -66,6 +88,19 @@ class sale_order_line(osv.osv):
     _columns = {
         'price_unit': fields.float('Unit Price', required=True, digits_compute= dp.get_precision('Product Price'), readonly=True, states={'draft': [('readonly', False)]}),
         'price_subtotal': fields.function(_amount_line, string='Subtotal', digits_compute= dp.get_precision('Account')),
+    }
+
+    def _get_sequence(self, cr, uid, context=None):
+        context = context or {}
+        next_id = False
+        if context.get('lines', False):
+            next_id = len(context.get('lines', False)) + 1
+        else:
+            next_id = 1
+        return next_id
+
+    _defaults = {
+        'sequence': _get_sequence,
     }
 
 class sale_order_remark(osv.osv):

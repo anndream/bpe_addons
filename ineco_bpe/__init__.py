@@ -19,10 +19,11 @@
 #
 ##############################################################################
 
+import res_users
 import purchase_requisition
 import purchase
 import account
 import hr
-import res_users
 import sale
 import product
+import sale_bpe

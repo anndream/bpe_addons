@@ -35,9 +35,49 @@ class res_users(osv.osv):
                     'department_id':  user.employee_ids[0].department_id.id,
                 }
         return res
-    
+
+    def _get_sale_group(self, cr, uid, ids, name, args, context=None):
+        res = {}
+        for user in self.browse(cr, uid, ids, context=context):
+            res[user.id] = {
+                'user_in_sale': False,
+                'user_in_sale_manager': False,
+            }
+            sale_category_ids = self.pool.get('ir.module.category').search(cr, uid, [('name','=','Sales')])
+            if sale_category_ids and user.id != 1:
+                sale_group_ids = self.pool.get('res.groups').search(cr, uid, [('category_id','in',sale_category_ids)])
+                sale_group = self.pool.get('res.groups').browse(cr, uid, sale_group_ids)
+                if sale_group:
+                    for group in sale_group:
+                        user_sale_ids = [ r.id for r in group.users]
+                        if user.id in user_sale_ids:
+                            res[user.id]['user_in_sale'] = True
+                sale_group_ids = self.pool.get('res.groups').search(cr, uid, [('category_id','in',sale_category_ids),('name','=','Manager')])
+                sale_group = self.pool.get('res.groups').browse(cr, uid, sale_group_ids)
+                if sale_group:
+                    for group in sale_group:
+                        user_sale_ids = [ r.id for r in group.users]
+                        if user.id in user_sale_ids:
+                            res[user.id]['user_in_sale_manager'] = True
+
+        return res
+
     _inherit = 'res.users'
     _columns = {
         'department_id': fields.function(_get_department, type="many2one", 
-                                string='Department', relation="hr.department", multi='_get_department'),                
+                                string='Department', relation="hr.department", multi='_get_department'),
+        'user_in_sale': fields.function(_get_sale_group, type="boolean", string="Sale User",
+                                store={
+                                    'res.users': (lambda self, cr, uid, ids, c={}: ids, [], 10),
+                                },
+                                multi='_sale_group'),
+        'user_in_sale_manager': fields.function(_get_sale_group, type="boolean", string="Sale Manager",
+                                store={
+                                    'res.users': (lambda self, cr, uid, ids, c={}: ids, [], 10),
+                                },
+                                multi='_sale_group'),
+    }
+    _defaults = {
+        'user_in_sale': False,
+        'user_in_sale_manager': False,
     }

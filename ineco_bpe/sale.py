@@ -26,8 +26,24 @@ from openerp.tools.translate import _
 from openerp.tools import DEFAULT_SERVER_DATE_FORMAT, DEFAULT_SERVER_DATETIME_FORMAT
 import openerp.addons.decimal_precision as dp
 from openerp import workflow
+from openerp import SUPERUSER_ID
+from lxml import etree
 
 class sale_order(osv.osv):
+
+    def _get_sale_user(self, cr, uid, ids, field_name, arg, context=None):
+        res = {}
+        if context is None:
+            context = {}
+        sale_category_id = self.pool.get('ir.module.category').search(cr, uid, [('name','=','Sales')])[0]
+        group_ids = self.pool.get('res.groups').search(cr, uid, [('category_id','=',sale_category_id)])
+        user_ids = []
+        for group in self.pool.get('res.groups').browse(cr ,uid, group_ids):
+            for group_id in group.users:
+                user_ids.append(group_id.id)
+        for line in self.browse(cr, uid, ids, context=context):
+            res[line.id] = list(set(user_ids))
+        return res
 
     _inherit = 'sale.order'
     _description = "BPE Sales Order"
@@ -41,6 +57,9 @@ class sale_order(osv.osv):
         'sale_document_ids': fields.many2many('sale.order.document.require','sale_order_document_rel','sale_order_id','document_id','Document Required'),
         'user_approve_id': fields.many2one('res.users','Approval By', track_visibility='onchange'),
         'date_approve': fields.datetime('Date Approval', track_visibility='onchange'),
+        #ineco_thai_account
+        'ineco_sale_admin_id': fields.many2one('res.users', 'Sale Admin',readonly=True),
+        'user_sale_ids': fields.function(_get_sale_user, string='List of Sale User', type='char' ),
     }
 
     _defaults = {
@@ -106,7 +125,7 @@ class sale_order_line(osv.osv):
 class sale_order_remark(osv.osv):
     _name = 'sale.order.remark'
     _columns = {
-        'name': fields.char('Reamrk Description', size=254, required=True)
+        'name': fields.text('Reamrk Description', required=True)
     }
     _order = 'name'
     _defaults = {

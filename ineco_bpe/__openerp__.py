@@ -34,7 +34,7 @@
     search_default_filter_my_checked":uid, "search_default_filter_my_approve":uid
 """,
     'depends' : [
-        'base','purchase','sale','purchase_requisition','analytic',
+        'base','web','purchase','sale','purchase_requisition','analytic',
     ],
     'data' : [
         'sequence.xml',
@@ -45,6 +45,7 @@
         'hr_view.xml',
         'sale_view.xml',
         'security.xml',
+        'base.xml',
         #'res_users_view.xml',
     ],
     'update_xml' : [

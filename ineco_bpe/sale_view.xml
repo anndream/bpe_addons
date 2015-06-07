@@ -35,6 +35,10 @@
 						</page>
                 </xpath>
 
+                <xpath expr="//page[@string='Order Lines']/field[@name='order_line']/tree[@string='Sales Order Lines']/field[@name='name']" position="replace">
+                    <field name="name" invisible="1" />
+                </xpath>
+
 				<xpath expr="//page[@string='Order Lines']/field[@name='order_line']/form[@string='Sales Order Lines']" position="replace">
 					<form string="Sales Order Lines" >
 						<header groups="base.group_user">
@@ -97,8 +101,9 @@
                 -->
 
 				<field name="user_id" position="replace">
-					<field name="user_id" on_change="onchange_user_id(user_id)" />
-					<field name="user_approve_id" string="Manager" />
+					<field name="user_sale_ids"  invisible="1" />
+					<field name="user_id" on_change="onchange_user_id(user_id)" domain="[('user_in_sale','!=',False)]"  />
+					<field name="user_approve_id" string="Manager"  domain="[('user_in_sale_manager','!=',False)]"/>
 				</field>
 
             </field>

@@ -1,6 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <openerp>
 	<data noupdate="0">
+
+	    <record model="ir.module.category" id="module_category_ineco">
+	        <field name="name">INECO</field>
+	        <field name="parent_id" ref="base.module_category_sales_management"/>
+	        <field name="sequence">100</field>
+	    </record>
+
+	    <record id="group_tax_modify" model="res.groups">
+	        <field name="name">Tax Modify</field>
+	        <field name="category_id" ref="module_category_ineco"/>
+	    </record>
 	    
 	    <record id="ineco_thai_account.group_account_commission" model="res.groups">
 	        <field name="name">Accountant with Commission</field>
@@ -16,6 +27,6 @@
 	        <field name="name">Multiple Check</field>
 	        <field name="category_id" ref="base.module_category_accounting_and_finance"/>
 	    </record>     
-	    
+
 	</data>
 </openerp>

@@ -76,6 +76,7 @@ class account_invoice(models.Model):
              "means direct payment.")
     partner_delivery_id = fields.Many2one('res.partner', string='Delivery Address')
     period_tax_id = fields.Many2one('account.period', string='Tax Period', index=True)
+    tax_option_id = fields.Many2one('account.tax', string='Tax Option')
     commission_sale = fields.Float('Sale Commission')
     commission_other = fields.Float('Other Commission')
     commission_note = fields.Char('Commission Note', size=256)
@@ -203,12 +204,45 @@ class account_invoice(models.Model):
 
         return result
 
+    #2015-06-13 Change way to grouping GL
+    def inv_line_characteristic_hashcode(self, invoice_line):
+        """Overridable hashcode generation for invoice lines. Lines having the same hashcode
+        will be grouped together if the journal has the 'group line' option. Of course a module
+        can add fields to invoice lines that would need to be tested too before merging lines
+        or not."""
+        return "%s-%s-%s-%s-%s" % (
+            invoice_line['account_id'],
+            invoice_line.get('tax_code_id', 'False'),
+            invoice_line.get('product_id_move', 'False'), #disable this parameter
+            invoice_line.get('analytic_account_id', 'False'),
+            invoice_line.get('date_maturity', 'False'),
+        )
+
     @api.multi
-    def invoice_validate(self):
-        for data in self:
-            if data.period_id and not data.period_tax_id:
-                data.write({'period_tax_id': data.period_id.id})
-        return self.write({'state': 'open'})
+    def button_clear_tax(self):
+        for invoice in self:
+            for line in invoice.invoice_line:
+                for tax in line.invoice_line_tax_id:
+                    line.write({'invoice_line_tax_id': [(3, tax.id)]})
+                #print line.invoice_line_tax_id
+        return {}
+
+    @api.multi
+    def button_add_tax(self):
+        for invoice in self:
+            for line in invoice.invoice_line:
+                if invoice.tax_option_id:
+                    line.write({'invoice_line_tax_id': [(6, 0, [invoice.tax_option_id.id])]})
+                #print line.invoice_line_tax_id
+        return {}
+
+    # 2015-06-13 Remove unused function
+    # @api.multi
+    # def invoice_validate(self):
+    #     for data in self:
+    #         if data.period_id and not data.period_tax_id:
+    #             data.write({'period_tax_id': data.period_id.id})
+    #     return self.write({'state': 'open'})
 
     
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

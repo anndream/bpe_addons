@@ -47,6 +47,21 @@
 	        	<field name="period_id" position="after">
 	        		<field name="period_tax_id" />
 	        	</field>
+
+	        	<field name="invoice_line" position="before">
+	        		<group attrs="{'invisible':[('state','!=','draft')]}" groups="ineco_thai_account.group_tax_modify">
+	        			<group>
+					        <field name="tax_option_id" states="draft" />
+	        			</group>
+	        			<group>
+                            <div>
+                                <button name="button_clear_tax" string="Clear Tax" type="object" states="draft" />
+                                <button name="button_add_tax" string="Add Tax" type="object" states="draft"/>
+                            </div>
+	        			</group>
+	        		</group>
+	        	</field>
+
 			</field>
 		</record>   
         
@@ -73,6 +88,19 @@
 	        	</xpath>
 	        	<field name="period_id" position="after">
 	        		<field name="period_tax_id" />
+	        	</field>
+	        	<field name="invoice_line" position="before">
+	        		<group attrs="{'invisible':[('state','!=','draft')]}" groups="ineco_thai_account.group_tax_modify">
+	        			<group>
+					        <field name="tax_option_id" states="draft"/>
+	        			</group>
+	        			<group>
+                            <div>
+                                <button name="button_clear_tax" string="Clear Tax" type="object" states="draft" />
+                                <button name="button_add_tax" string="Add Tax" type="object" states="draft"/>
+                            </div>
+	        			</group>
+	        		</group>
 	        	</field>
 			</field>
 		</record> 		

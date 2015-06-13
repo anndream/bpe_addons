@@ -67,6 +67,31 @@
             <field name="padding">6</field>
             <field name="company_id" eval="False"/>
         </record>
-  		
+
+        <record id="seq_ineco_billing_code" model="ir.sequence.type">
+            <field name="name">Billing No</field>
+            <field name="code">ineco.billing.no</field>
+        </record>
+
+        <record id="seq_ineco_billing" model="ir.sequence">
+            <field name="name">Billing No</field>
+            <field name="code">ineco.billing.no</field>
+            <field name="prefix">BL-</field>
+            <field name="padding">4</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+        <record id="seq_ineco_receipt_code" model="ir.sequence.type">
+            <field name="name">Receipt No</field>
+            <field name="code">ineco.receipt.no</field>
+        </record>
+
+        <record id="seq_ineco_receipt" model="ir.sequence">
+            <field name="name">Receipt No</field>
+            <field name="code">ineco.receipt.no</field>
+            <field name="prefix">RL-</field>
+            <field name="padding">4</field>
+            <field name="company_id" eval="False"/>
+        </record>
     </data>
 </openerp>

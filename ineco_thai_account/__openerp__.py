@@ -40,6 +40,7 @@ A. Sale Module:
 1. Add Delivery Date on Sale Order
 2. Add Delivery Method on Sale Order
 3. Add Exchange Rate on Sale Order
+4. Add Billing No and Receipt No on Voucher
     """,
     'website': 'http://www.ineco.co.th',
     'data': [

@@ -68,13 +68,23 @@ class account_voucher(osv.osv):
             relation='account.move.line', string='General Ledgers'),      
         'wht_ids': fields.one2many('ineco.wht', 'voucher_id', 'WHT'),
         #'cheque_id': fields.many2one('ineco.cheque','Cheque'),        
-        'bill_number': fields.char('Bill No', size=64),
+        'bill_number': fields.char('Billing No', size=64),
         'receipt_number': fields.char('Receipt No', size=64),
         'period_tax_id': fields.many2one('account.period', 'Tax Period'),
         'account_model_id': fields.many2one('account.model', 'Model'),
         'addline_ids': fields.one2many('account.voucher.addline','voucher_id','Add Line'),
         'cheque_ids': fields.many2many('ineco.cheque', 'voucher_cheque_ids', 'voucher_id', 'cheque_id', 'Cheque'),      
     }
+
+    def button_billing_no(self, cr, uid, ids, context=None):
+        next_no = self.pool.get('ir.sequence').get(cr, uid, 'ineco.billing.no') or '/'
+        self.write(cr, uid, ids, {'bill_number':next_no})
+        return True
+
+    def button_receipt_no(self, cr, uid, ids, context=None):
+        next_no = self.pool.get('ir.sequence').get(cr, uid, 'ineco.receipt.no') or '/'
+        self.write(cr, uid, ids, {'reference':next_no})
+        return True
 
     def button_loadtemplate(self, cr, uid, ids, context=None):
         for data in self.browse(cr, uid, ids):

@@ -29,6 +29,7 @@
                  "account",
                  "account_voucher",
                  "hr",
+                 "hr_expense",
                  "stock",
                  #"ineco_stock"
                 ],
@@ -62,6 +63,7 @@ A. Sale Module:
         'account_petty_fund_view.xml',
         'account_petty_payment_view.xml', 
         'security.xml',
+        'hr_expense_view.xml',
     ],
     'update_xml': [
         #'delivery_view.xml',

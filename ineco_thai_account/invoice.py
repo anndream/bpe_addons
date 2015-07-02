@@ -66,8 +66,8 @@ class account_invoice(models.Model):
     
     _inherit = "account.invoice"
     
-    bill_due = fields.Date(string='Billing Date', index=True)
-    receipt_due = fields.Date(string='Expect Receive Date', index=True)
+    bill_due = fields.Date(string='Expected Billing Date', index=True)
+    receipt_due = fields.Date(string='Expected Receive Date', index=True)
     date_due = fields.Date(string='Due Date', index=True, copy=False,
         help="If you use payment terms, the due date will be computed automatically at the generation "
              "of accounting entries. The payment term may compute several due dates, for example 50% "

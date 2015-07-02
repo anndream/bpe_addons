@@ -197,6 +197,13 @@ class account_account(osv.osv):
                                             help="Total amount (in Company currency) for transactions held in secondary currency for this account."),
         'unrealized_gain_loss': fields.function(__compute, digits_compute=dp.get_precision('Account'), string='Unrealized Gain or Loss', multi='balance',
                                                 help="Value of Loss or Gain due to changes in exchange rate when doing multi-currency transactions."),
+        'name2': fields.char('Other Name', required=False, copy=False),
+    }
+
+class account_journal(osv.osv):
+    _inherit = 'account.journal'
+    _columns = {
+        'name2': fields.char('Other Name'),
     }
 
 # class account_voucher(osv.osv):

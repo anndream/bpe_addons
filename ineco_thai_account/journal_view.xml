@@ -2,6 +2,7 @@
 <openerp>
     <data>
 
+        <!--
         <record id="view_ineco_account_journal_tree" model="ir.ui.view">
             <field name="name">ineco.account.journal.tree</field>
             <field name="model">account.journal</field>
@@ -12,7 +13,25 @@
             	</field>
             </field>
         </record>
-        
+        -->
+
+        <record id="view_ineco_account_journal_tree" model="ir.ui.view">
+            <field name="name">ineco.account.journal.tree</field>
+            <field name="model">account.journal</field>
+            <field name="inherit_id" ref="account.view_account_journal_tree" />
+            <field name="arch" type="xml">
+                <field name="type" position="after">
+                    <field name="customer_invoice" string="CI" />
+                    <field name="customer_refund" string="CN" />
+                    <field name="customer" string="RV" />
+                    <field name="supplier_invoice" string="SI" />
+                    <field name="supplier_refund" string="DN" />
+                    <field name="supplier" string="PV"/>
+                    <field name="petty_cash" string="PC"/>
+                </field>
+            </field>
+        </record>
+
     	<record id="view_ineco_account_journal_form" model="ir.ui.view">
             <field name="name">ineco.account.journal.form</field>
             <field name="model">account.journal</field>
@@ -20,10 +39,27 @@
             <field name="arch" type="xml">
             	<field name="group_invoice_lines" position="after">
             		<field name="print_sale_tax" />
-                    <field name="customer" />
-                    <field name="supplier" />
                     <field name="active" />
             	</field>
+                <notebook position="inside">
+                    <page string="Kind of Journal" >
+                        <group>
+                            <group string="Customer">
+                                <field name="customer_invoice" />
+                                <field name="customer_refund" />
+                                <field name="customer" string="Customer Payment" />
+                            </group>
+                            <group string="Supplier">
+                                <field name="supplier_invoice" />
+                                <field name="supplier_refund" />
+                                <field name="supplier" string="Supplier Payment"/>
+                            </group>
+                            <group string="Petty Cash">
+                                <field name="petty_cash" />
+                            </group>
+                        </group>
+                    </page>
+                </notebook>
             </field>
         </record>
         

@@ -1,20 +1,58 @@
 <?xml version="1.0" encoding="utf-8"?>
 <openerp>
     <data>
-    <!-- 
+
+        <!-- Account -->
+
         <record model="ir.ui.view" id="view_ineco_account_account_form">
 	      	<field name="name">ineco.account.account.form</field>
 	      	<field name="model">account.account</field>
 	      	<field name="inherit_id" ref="account.view_account_form"/>   
 	      	<field name="arch" type="xml">
-	      	    <field name="user_type" position="after">
-	      	   		<field name="report_type" />
-	      	   		<field name="cashflow_report" />
+	      	    <field name="parent_id" position="before">
+	      	   		<field name="name2" />
 	      	    </field>	      	    
 			</field>
 		</record> 	 
-	 -->     	            
-        
+
+        <record model="ir.ui.view" id="view_ineco_account_account_tree">
+	      	<field name="name">ineco.account.account.tree</field>
+	      	<field name="model">account.account</field>
+	      	<field name="inherit_id" ref="account.view_account_list"/>
+	      	<field name="arch" type="xml">
+	      	    <field name="name" position="after">
+	      	   		<field name="name2" />
+	      	    </field>
+                <field name="type" position="replace">
+                    <field name="type" invisible="1" />
+                </field>
+			</field>
+		</record>
+
+        <!--Account Journal-->
+
+        <record model="ir.ui.view" id="view_ineco_account_journal2_tree">
+	      	<field name="name">ineco.account.journal2.tree</field>
+	      	<field name="model">account.journal</field>
+	      	<field name="inherit_id" ref="account.view_account_journal_tree"/>
+	      	<field name="arch" type="xml">
+	      	    <field name="name" position="after">
+	      	   		<field name="name2" />
+	      	    </field>
+			</field>
+		</record>
+
+        <record model="ir.ui.view" id="view_ineco_account_journal2_form">
+	      	<field name="name">ineco.account.journal2.form</field>
+	      	<field name="model">account.journal</field>
+	      	<field name="inherit_id" ref="account.view_account_journal_form"/>
+	      	<field name="arch" type="xml">
+	      	    <field name="code" position="before">
+	      	   		<field name="name2" />
+	      	    </field>
+			</field>
+		</record>
+
         <record id="view_ineco_payment_term_line_tree" model="ir.ui.view">
             <field name="name">ineco.payment.term.line.tree</field>
             <field name="model">account.payment.term.line</field>

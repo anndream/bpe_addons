@@ -62,7 +62,7 @@ class account_voucher(osv.osv):
                 partial_ids.append(line.id)
             res[id] =[x for x in partial_ids]
         return res
-    
+
     _inherit = "account.voucher"
     _columns = {
         'account_move_lines':fields.function(_get_move_lines, type='many2many', 
@@ -70,11 +70,20 @@ class account_voucher(osv.osv):
         'wht_ids': fields.one2many('ineco.wht', 'voucher_id', 'WHT'),
         #'cheque_id': fields.many2one('ineco.cheque','Cheque'),        
         'bill_number': fields.char('Billing No', size=64),
-        'receipt_number': fields.char('Receipt No', size=64),
+        'receipt_number': fields.char('Tax/Receipt No', size=64),
         'period_tax_id': fields.many2one('account.period', 'Tax Period'),
         'account_model_id': fields.many2one('account.model', 'Model'),
         'addline_ids': fields.one2many('account.voucher.addline','voucher_id','Add Line'),
-        'cheque_ids': fields.many2many('ineco.cheque', 'voucher_cheque_ids', 'voucher_id', 'cheque_id', 'Cheque'),      
+        'cheque_ids': fields.many2many('ineco.cheque', 'voucher_cheque_ids', 'voucher_id', 'cheque_id', 'Cheque'),
+        #2015-06-29
+        'receipt_number2': fields.char('Receipt No', size=64),
+        'change_bill_number': fields.boolean('Change Bill Number'),
+        'change_receipt_number': fields.boolean('Change Tax/Receive Number'),
+        'change_receipt_number2': fields.boolean('Change Receive Number'),
+    }
+
+    _defaults = {
+        'journal_id': False,
     }
 
     #Replace Date_due to Check_Due
@@ -290,7 +299,12 @@ class account_voucher(osv.osv):
 
     def button_receipt_no(self, cr, uid, ids, context=None):
         next_no = self.pool.get('ir.sequence').get(cr, uid, 'ineco.receipt.no') or '/'
-        self.write(cr, uid, ids, {'reference':next_no})
+        self.write(cr, uid, ids, {'receipt_number':next_no})
+        return True
+
+    def button_receipt2_no(self, cr, uid, ids, context=None):
+        next_no = self.pool.get('ir.sequence').get(cr, uid, 'ineco.receipt2.no') or '/'
+        self.write(cr, uid, ids, {'receipt_number2':next_no})
         return True
 
     def button_loadtemplate(self, cr, uid, ids, context=None):

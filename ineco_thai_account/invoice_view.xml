@@ -11,6 +11,10 @@
 	      	<field name="model">account.invoice</field>
 	      	<field name="inherit_id" ref="account.invoice_form"/>
 	      	<field name="arch" type="xml">
+                <field name="journal_id" position="replace">
+                    <field name="journal_id" domain="[('customer_invoice','=',True),('type','=','sale')]" />
+                </field>
+
 	        	<xpath expr="//page[@string='Payments']" position="before" >
 	        	    <page string="General Ledger">
 	        	    	<field name="account_move_lines" readonly="1">
@@ -40,9 +44,7 @@
 	        	</xpath>
 	        	<field name="move_id" position="after">
 	        		<field name="bill_due" />
-	        	</field>
-	        	<field name="date_due" position="after">
-	        		<field name="receipt_due" />
+                    <field name="receipt_due" />
 	        	</field>
 	        	<field name="period_id" position="after">
 	        		<field name="period_tax_id" />
@@ -51,7 +53,7 @@
 	        	<field name="invoice_line" position="before">
 	        		<group attrs="{'invisible':[('state','!=','draft')]}" groups="ineco_thai_account.group_tax_modify">
 	        			<group>
-					        <field name="tax_option_id" states="draft" />
+					        <field name="tax_option_id" states="draft" domain="[('type_tax_use','in',('sale','all'))]" />
 	        			</group>
 	        			<group>
                             <div>
@@ -92,7 +94,7 @@
 	        	<field name="invoice_line" position="before">
 	        		<group attrs="{'invisible':[('state','!=','draft')]}" groups="ineco_thai_account.group_tax_modify">
 	        			<group>
-					        <field name="tax_option_id" states="draft"/>
+					        <field name="tax_option_id" states="draft" domain="[('type_tax_use','in',('purchase','all'))]"/>
 	        			</group>
 	        			<group>
                             <div>

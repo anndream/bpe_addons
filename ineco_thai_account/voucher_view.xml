@@ -23,6 +23,9 @@
 	      	    <field name="date_due" position="replace">
 	      	   		<field name="date_due" />
 	      	    </field>
+                <field name="journal_id" position="replace">
+                    <field name="journal_id" domain="[('customer','=',True),('type','in',('cash','bank'))]" />
+                </field>
 	        	<xpath expr="//page[@string='Sales Information']" position="after" >
 	        	    <page string="General Ledger">
 	        	    	<field name="account_move_lines" readonly="1">
@@ -147,17 +150,22 @@
 	        	</xpath>
 
 		        <field name="journal_id" position="after">
-		        	<field name="move_id" />
+		        	<field name="move_id" readonly="1" />
+                    <field name="change_bill_number" groups="base.group_erp_manager"/>
+                    <field name="change_receipt_number" groups="base.group_erp_manager"/>
+                    <field name="change_receipt_number2" groups="base.group_erp_manager"/>
 		        </field>
 
 		        <field name="name" position="after">
-		        	<field name="bill_number" />
-		        	<field name="receipt_number" />
+		        	<field name="bill_number" attrs="{'readonly':[('change_bill_number','=',False)]}"/>
+		        	<field name="receipt_number" attrs="{'readonly':[('change_receipt_number','=',False)]}"/>
+                    <field name="receipt_number2" attrs="{'readonly':[('change_receipt_number2','=',False)]}"/>
 		        </field>
 
 				<button name="proforma_voucher" position="after">
 					<button name="button_billing_no" type="object" string="Get Billing Number" attrs="{'invisible':[('bill_number','!=',False)]}" />
-					<button name="button_receipt_no" type="object" string="Get Receipt Number" attrs="{'invisible':[('reference','!=',False)]}"/>
+					<button name="button_receipt_no" type="object" string="Get Tax/Receipt No" attrs="{'invisible':[('receipt_number','!=',False)]}"/>
+					<button name="button_receipt2_no" type="object" string="Get Receipt No" attrs="{'invisible':[('receipt_number2','!=',False)]}"/>
 				</button>
 			</field>
 		</record>    
@@ -549,6 +557,32 @@
         </record>
         
     	<menuitem action="action_ineco_supplier_payment" id="menu_ineco_supplier_payment" parent="menu_ineco_accounting_calendar" sequence="7"/>        
+
+        <record model="ir.ui.view" id="view_ineco_sale_receipt_form">
+            <field name="name">ineco.voucher.sale.form</field>
+            <field name="model">account.voucher</field>
+            <field name="inherit_id" ref="account_voucher.view_sale_receipt_form"/>
+            <field name="arch" type="xml">
+                <field name="journal_id" position="replace">
+                    <field name="journal_id" domain="[('customer','=',True)]"
+                           on_change="onchange_journal(journal_id, line_cr_ids, tax_id, partner_id, date, amount, type, company_id, context)"
+                           groups="account.group_account_user"/>
+                </field>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="view_ineco_purchase_receipt2_form">
+            <field name="name">ineco.voucher.purchase2.form</field>
+            <field name="model">account.voucher</field>
+            <field name="inherit_id" ref="account_voucher.view_purchase_receipt_form"/>
+            <field name="arch" type="xml">
+                <field name="journal_id" position="replace">
+                    <field name="journal_id" domain="[('supplier','=',True)]"
+                           on_change="onchange_journal(journal_id, line_dr_ids, tax_id, partner_id, date, amount, type, company_id, context)"
+                           groups="account.group_account_user"/>
+                </field>
+            </field>
+        </record>
 
   	</data>
 </openerp>

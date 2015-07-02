@@ -27,7 +27,7 @@ class res_partner(osv.osv):
         'pid': fields.char('Tax ID', sieze=32,),   
         'billing_payment_id': fields.many2one('account.payment.term', 'Billing Term', select=True),
         'with_holding_type': fields.selection([('pp4','PP3'),('pp7','PP53')], 'With Holding Tax'),
-        'tax_detail': fields.char('Branch', size=32),
+        'tax_detail': fields.char('Branch No', size=32),
         'note_cheque': fields.char('Note Cheque', size=256),
         'cheque_payment_id': fields.many2one('account.payment.term', 'Cheque Term', select=True),
     }

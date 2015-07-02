@@ -6,15 +6,25 @@
 	      	<field name="name">ineco.billing.partner.form</field>
 	      	<field name="model">res.partner</field>
 	      	<field name="inherit_id" ref="account.view_partner_property_form"/>
-	      	<field name="arch" type="xml">	        	
+	      	<field name="arch" type="xml">
+                <xpath expr="//page[@name='accounting']" position="after">
+                    <page string="More Information">
+                        <group>
+                            <group>
+                                <field name="pid" required="1"/>
+                                <field name="tax_detail" />
+                                <field name="with_holding_type" />
+                            </group>
+                            <group>
+                                <field name="billing_payment_id" domain="[('billing_term','=',True)]"/>
+                                <field name="cheque_payment_id" />
+                                <field name="note_cheque" invisible="1"/>
+                            </group>
+                        </group>
+                    </page>
+                </xpath>
 	        	<field name="property_payment_term" position="after">
-	        		<field name="pid" />
-	        		<field name="tax_detail" />
-	        		<field name="billing_payment_id" domain="[('billing_term','=',True)]"/>
-	        		<field name="note_cheque" invisible="1"/>
-	        		<field name="cheque_payment_id" />
-	        		<field name="with_holding_type" />
-	        	</field>	        	
+	        	</field>
 	        </field>  	
 	    </record>
 

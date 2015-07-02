@@ -25,9 +25,14 @@ class account_journal(osv.osv):
     _inherit = 'account.journal'
     
     _columns = {
-        'print_sale_tax': fields.boolean('Print Tax Report'),
+        'print_sale_tax': fields.boolean('Print Tax Report'), #To be remove because Tax Report from GL Only
         'customer': fields.boolean('Customer Payment'),
         'supplier': fields.boolean('Supplier Payment'),
+        'customer_invoice': fields.boolean('Customer Invoice'),
+        'supplier_invoice': fields.boolean('Supplier Invoice'),
+        'customer_refund': fields.boolean('Customer Refund'),
+        'supplier_refund': fields.boolean('Supplier Refund'),
+        'petty_cash': fields.boolean('Petty Cash'),
         'active': fields.boolean('Active'),
     }
     
@@ -35,5 +40,10 @@ class account_journal(osv.osv):
         'print_sale_tax': True,
         'customer': False,
         'supplier': False,
+        'customer_invoice': False,
+        'supplier_invoice': False,
+        'customer_refund': False,
+        'supplier_refund': False,
+        'pett_cash': False,
         'active': True,
     }

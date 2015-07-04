@@ -238,6 +238,27 @@ class account_move(osv.osv):
 
 class account_move_line(osv.osv):
 
+    def _get_tax_invoice(self, cr, uid, ids, field_name, arg, context=None):
+        res = {}
+        for line in self.browse(cr, uid, ids):
+            res[line.id] = {
+                'tax_invoice_no': False,
+                'tax_invoice_date': False,
+                'tax_invoice_base': 0.0,
+            }
+            if line.invoice_id :
+                if line.invoice_id.type in ('in_invoice','in_refund'):
+                    res[line.id]['tax_invoice_no'] = line.invoice_id.reference
+                else:
+                    res[line.id]['tax_invoice_no'] = line.invoice_id.number
+                res[line.id]['tax_invoice_date'] = line.invoice_id.date_invoice
+                res[line.id]['tax_invoice_base'] = line.invoice_id.amount_untaxed
+            elif line.tax_code_id :
+                res[line.id]['tax_invoice_no'] = line.name
+                res[line.id]['tax_invoice_date'] = line.date_maturity
+                res[line.id]['tax_invoice_base'] = line.base_amount
+        return res
+
     _inherit = 'account.move.line'
 
     _columns = {
@@ -245,6 +266,10 @@ class account_move_line(osv.osv):
         'invoice_number': fields.related('invoice_id','number',type="char",string="Number", readonly=True),
         'invoice_date': fields.related('invoice_id','date_invoice',type="date",string="Invoice Date", readonly=True),
         'supplier_invoice_number': fields.related('invoice_id','supplier_invoice_number',type="char",string="Supplier Invoice", readonly=True),
+        'base_amount': fields.float('Base Amount', digits_compute=dp.get_precision('Account')),
+        'tax_invoice_no': fields.function(_get_tax_invoice, string='Tax Invoice No', type="char",multi="_get_taxinvoice"),
+        'tax_invoice_date': fields.function(_get_tax_invoice, string='Tax Invoice Date', type="date",multi="_get_taxinvoice"),
+        'tax_invoice_base': fields.function(_get_tax_invoice, string='Base Amount', type="float", digits_compute=dp.get_precision('Account'), multi="_get_taxinvoice"),
     }
 
     def reconcile(self, cr, uid, ids, type='auto', writeoff_acc_id=False, writeoff_period_id=False, writeoff_journal_id=False, context=None):

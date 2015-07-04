@@ -141,9 +141,9 @@
             <field name="arch" type="xml">
             	<xpath expr="//tree[@string='Journal Items']/field[@name='debit']" position="before">
                     <field name="invoice_id" invisible="1" />
-                    <field name="invoice_number" />
-                    <field name="supplier_invoice_number" />
-                    <field name="invoice_date" />
+                    <field name="tax_invoice_no" />
+                    <field name="tax_invoice_date" />
+                    <field name="tax_invoice_base" invisible="1"/>
                 </xpath>
                 <xpath expr="//tree[@string='Journal Items']/field[@name='reconcile_id']" position="replace">
                     <field name="reconcile_id" invisible="1" />
@@ -177,9 +177,9 @@
             <field name="arch" type="xml">
                 <field name="ref" position="replace">
                     <field name="ref" invisible="1" />
-                    <field name="invoice_number" />
-                    <field name="supplier_invoice_number" />
-                    <field name="invoice_date" />
+                    <field name="tax_invoice_no" />
+                    <field name="tax_invoice_date" />
+                    <field name="tax_invoice_base" invisible="1"/>
                 </field>
             </field>
         </record>

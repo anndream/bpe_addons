@@ -281,7 +281,34 @@ class account_invoice(models.Model):
             'product_id': line.get('product_id', False),
             'product_uom_id': line.get('uos_id', False),
             'analytic_account_id': line.get('account_analytic_id', False),
-            'invoice_id': self.id,
+            'invoice_id': line.get('invoice_id', False) ,
         }
 
+class account_invoice_tax(models.Model):
+
+    _inherit = "account.invoice.tax"
+
+    @api.model
+    def move_line_get(self, invoice_id):
+        res = []
+        self._cr.execute(
+            'SELECT * FROM account_invoice_tax WHERE invoice_id = %s',
+            (invoice_id,)
+        )
+        for row in self._cr.dictfetchall():
+            if not (row['amount'] or row['tax_code_id'] or row['tax_amount']):
+                continue
+            res.append({
+                'type': 'tax',
+                'name': row['name'],
+                'price_unit': row['amount'],
+                'quantity': 1,
+                'price': row['amount'] or 0.0,
+                'account_id': row['account_id'],
+                'tax_code_id': row['tax_code_id'],
+                'tax_amount': row['tax_amount'],
+                'account_analytic_id': row['account_analytic_id'],
+                'invoice_id': invoice_id,
+            })
+        return res
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

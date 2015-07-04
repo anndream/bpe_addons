@@ -99,7 +99,7 @@ class account_voucher(osv.osv):
         return res
 
     def proforma_voucher(self, cr, uid, ids, context=None):
-        result = super(account_voucher, self).action_move_line_create(cr, uid, ids, context=context)
+        result = self.action_move_line_create(cr, uid, ids, context=context)
         for id in ids:
             sql = """
                 delete from account_voucher_line
@@ -135,7 +135,7 @@ class account_voucher(osv.osv):
         if context is None:
             context = {}
         context_multi_currency = context.copy()
-
+        voucher_ids = ids
         currency_pool = self.pool.get('res.currency')
         move_line_pool = self.pool.get('account.move.line')
         partner_pool = self.pool.get('res.partner')
@@ -189,10 +189,11 @@ class account_voucher(osv.osv):
                     join account_voucher av on av.id = avl.voucher_id
                     where av.partner_id = %s and
                       (avl.amount = avl.amount_unreconciled)
+                      and av.id <> %s
                   )
 
             """
-            cr.execute(sql % (partner_id, partner_id))
+            cr.execute(sql % (partner_id, partner_id, voucher_ids[0] ))
             ids2 = map(itemgetter(0), cr.fetchall())
             ids = move_line_pool.search(cr, uid, [('state','=','valid'), ('account_id.type', '=', account_type), ('reconcile_id', '=', False), ('partner_id', '=', partner_id)], context=context)
             for value in ids2:

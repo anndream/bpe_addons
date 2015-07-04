@@ -129,6 +129,7 @@
 					<field name="user_checked_id" />
 					<field name="user_approve_id" />
 					<field name="rfq_ready" />
+					<field name="account_analytic_id" string="Job No." />
 				</field>
 			</field>
 		</record>
@@ -148,6 +149,7 @@
 	        		<field name="type_of_requirement" />
 					<field name="user_checked_id" />
 					<field name="user_approve_id" />
+                    <field name="account_analytic_id" string="Job No." />
 				</field>
 	        </field>
 	    </record>

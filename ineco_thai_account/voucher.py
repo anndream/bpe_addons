@@ -176,7 +176,7 @@ class account_voucher(osv.osv):
             if not account_type:
                 account_type = 'receivable'
 
-        if not context.get('move_line_ids', False):
+        if not context.get('move_line_ids', False) :
             sql = """
                 select a.id from account_move_line a
                 join account_account aa on aa.id = a.account_id
@@ -193,12 +193,16 @@ class account_voucher(osv.osv):
                   )
 
             """
-            cr.execute(sql % (partner_id, partner_id, voucher_ids[0] ))
-            ids2 = map(itemgetter(0), cr.fetchall())
-            ids = move_line_pool.search(cr, uid, [('state','=','valid'), ('account_id.type', '=', account_type), ('reconcile_id', '=', False), ('partner_id', '=', partner_id)], context=context)
-            for value in ids2:
-                ids.remove(value)
-            #ids = move_line_pool.search(cr, uid, [('state','=','valid'), ('account_id.type', '=', account_type), ('reconcile_id', '=', False), ('partner_id', '=', partner_id)], context=context)
+            if voucher_ids:
+                cr.execute(sql % (partner_id, partner_id, voucher_ids[0] ))
+                ids2 = map(itemgetter(0), cr.fetchall())
+                ids = move_line_pool.search(cr, uid, [('state','=','valid'), ('account_id.type', '=', account_type),
+                                                      ('reconcile_id', '=', False), ('partner_id', '=', partner_id)], context=context)
+                for value in ids2:
+                    ids.remove(value)
+            else:
+                ids = move_line_pool.search(cr, uid, [('state','=','valid'), ('account_id.type', '=', account_type),
+                                                      ('reconcile_id', '=', False), ('partner_id', '=', partner_id)], context=context)
         else:
             ids = context['move_line_ids']
         invoice_id = context.get('invoice_id', False)

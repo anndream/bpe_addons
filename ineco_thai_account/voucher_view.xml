@@ -85,10 +85,15 @@
 	      	<field name="arch" type="xml">
 		      	<field name="date" position="after">
 		      		<field name="date_due" />
+                    <field name="receipt_date" />
 		      	</field>		      	  
 		      	<field name="period_id" position="after">
 		      		<field name="period_tax_id" />
-		      	</field>  
+		      	</field>
+				<xpath expr="//page[@string='Payment Information']/field[@name='line_cr_ids']/tree/field[@name='date_due']" position="after">
+                    <field name="receive_no" groups="ineco_thai_account.group_individual_taxinvoice"/>
+                    <field name="receive_date" invisible="1"/>
+				</xpath>
 		      	<xpath expr="//page[@string='Payment Information']" position="after" >       	    
 	        	    <page string="General Ledger">
 	        	    	<field name="account_move_lines" readonly="1">
@@ -152,20 +157,20 @@
 		        <field name="journal_id" position="after">
 		        	<field name="move_id" readonly="1" />
                     <field name="change_bill_number" groups="base.group_erp_manager"/>
-                    <field name="change_receipt_number" groups="base.group_erp_manager"/>
-                    <field name="change_receipt_number2" groups="base.group_erp_manager"/>
+                    <field name="change_receipt_number" groups="base.group_erp_manager" invisible="1"/>
+                    <field name="change_receipt_number2" groups="base.group_erp_manager" />
 		        </field>
 
 		        <field name="name" position="after">
 		        	<field name="bill_number" attrs="{'readonly':[('change_bill_number','=',False)]}"/>
-		        	<field name="receipt_number" attrs="{'readonly':[('change_receipt_number','=',False)]}"/>
-                    <field name="receipt_number2" attrs="{'readonly':[('change_receipt_number2','=',False)]}"/>
+		        	<field name="receipt_number" attrs="{'readonly':[('change_receipt_number','=',False)]}" invisible="1"/>
+                    <field name="receipt_number2" string="Billing/Receipt No" attrs="{'readonly':[('change_receipt_number2','=',False)]}"/>
 		        </field>
 
 				<button name="proforma_voucher" position="after">
 					<button name="button_billing_no" type="object" string="Get Billing Number" attrs="{'invisible':[('bill_number','!=',False)]}" />
-					<button name="button_receipt_no" type="object" string="Get Tax/Receipt No" attrs="{'invisible':[('receipt_number','!=',False)]}"/>
-					<button name="button_receipt2_no" type="object" string="Get Receipt No" attrs="{'invisible':[('receipt_number2','!=',False)]}"/>
+					<button name="button_receipt_no" type="object" string="Get Invoice/Receipt No" />
+					<button name="button_receipt2_no" type="object" string="Get Billing/Receipt No" attrs="{'invisible':[('receipt_number2','!=',False)]}"/>
 				</button>
 			</field>
 		</record>    

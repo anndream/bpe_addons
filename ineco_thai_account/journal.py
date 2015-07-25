@@ -22,6 +22,7 @@
 from openerp.osv import osv, fields
 
 class account_journal(osv.osv):
+
     _inherit = 'account.journal'
     
     _columns = {
@@ -33,6 +34,7 @@ class account_journal(osv.osv):
         'customer_refund': fields.boolean('Customer Refund'),
         'supplier_refund': fields.boolean('Supplier Refund'),
         'petty_cash': fields.boolean('Petty Cash'),
+        'receipt_journal_id': fields.many2one('account.journal','Receipt Journal'),
         'active': fields.boolean('Active'),
     }
     

@@ -21,6 +21,7 @@
             <field name="inherit_id" ref="account.view_account_journal_tree" />
             <field name="arch" type="xml">
                 <field name="type" position="after">
+                    <field name="receipt_journal_id" groups="ineco_thai_account.group_individual_taxinvoice"/>
                     <field name="customer_invoice" string="CI" />
                     <field name="customer_refund" string="CN" />
                     <field name="customer" string="RV" />
@@ -37,6 +38,9 @@
             <field name="model">account.journal</field>
             <field name="inherit_id" ref="account.view_account_journal_form" />            
             <field name="arch" type="xml">
+                <field name="sequence_id" position="after">
+                    <field name="receipt_journal_id" domain="[('id', '!=', id)]" groups="ineco_thai_account.group_individual_taxinvoice"/>
+                </field>
             	<field name="group_invoice_lines" position="after">
             		<field name="print_sale_tax" />
                     <field name="active" />

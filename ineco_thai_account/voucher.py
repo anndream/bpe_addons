@@ -80,6 +80,7 @@ class account_voucher(osv.osv):
         'change_bill_number': fields.boolean('Change Bill Number'),
         'change_receipt_number': fields.boolean('Change Tax/Receive Number'),
         'change_receipt_number2': fields.boolean('Change Receive Number'),
+        'receipt_date': fields.date('Receipt Date'),
     }
 
     _defaults = {
@@ -303,8 +304,18 @@ class account_voucher(osv.osv):
         return True
 
     def button_receipt_no(self, cr, uid, ids, context=None):
-        next_no = self.pool.get('ir.sequence').get(cr, uid, 'ineco.receipt.no') or '/'
-        self.write(cr, uid, ids, {'receipt_number':next_no})
+        for data in self.browse(cr, uid, ids):
+            for line in data.line_cr_ids:
+                if not data.receipt_date:
+                    raise osv.except_osv('Error', 'Please input Receipt Date.')
+                if line.invoice_id and line.invoice_id.journal_id and not line.invoice_id.journal_id.receipt_journal_id:
+                    raise osv.except_osv('Error', 'Receipt Journal ID in [ %s ] not found.' % (line.invoice_id.journal_id.name))
+                if not line.invoice_id.receive_no:
+                    next_no = line.invoice_id.journal_id.sequence_id.next_by_id(line.invoice_id.journal_id.receipt_journal_id.sequence_id.id)
+                    line.invoice_id.write({
+                        'receive_no': next_no,
+                        'receive_date': data.receipt_date
+                    })
         return True
 
     def button_receipt2_no(self, cr, uid, ids, context=None):
@@ -535,3 +546,11 @@ class account_voucher(osv.osv):
                 cr.rollback()
                 raise osv.except_osv('Error', 'Validation error please contact administrator.')
         return True
+
+class account_voucher_line(osv.osv):
+    _inherit = 'account.voucher.line'
+    _columns = {
+        'invoice_id': fields.related('move_line_id','invoice', type='many2one', relation='account.invoice', string='Invoice', readonly=1),
+        'receive_no': fields.related('invoice_id','receive_no',type='char',string='Receipt No',readonly=1),
+        'receive_date': fields.related('invoice_id','receive_date',type='date',string='Receipt Date',readonly=1),
+    }

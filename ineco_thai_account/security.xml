@@ -12,7 +12,12 @@
 	        <field name="name">Tax Modify</field>
 	        <field name="category_id" ref="module_category_ineco"/>
 	    </record>
-	    
+
+		<record id="group_individual_taxinvoice" model="res.groups">
+	        <field name="name">Individual Tax Invoice</field>
+	        <field name="category_id" ref="module_category_ineco"/>
+	    </record>
+
 	    <record id="ineco_thai_account.group_account_commission" model="res.groups">
 	        <field name="name">Accountant with Commission</field>
 	        <field name="category_id" ref="base.module_category_accounting_and_finance"/>

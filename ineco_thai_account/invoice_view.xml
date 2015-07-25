@@ -15,6 +15,11 @@
                     <field name="journal_id" domain="[('customer_invoice','=',True),('type','=','sale')]" />
                 </field>
 
+                <field name="fiscal_position" position="after">
+                    <field name="receive_no" groups="ineco_thai_account.group_individual_taxinvoice"/>
+                    <field name="receive_date" groups="ineco_thai_account.group_individual_taxinvoice"/>
+                </field>
+
 	        	<xpath expr="//page[@string='Payments']" position="before" >
 	        	    <page string="General Ledger">
 	        	    	<field name="account_move_lines" readonly="1">
@@ -142,6 +147,8 @@
             	<field name="date_due" position="after">
             		<field name="receipt_due" />
             		<field name="bill_due" />
+                    <field name="receive_no" groups="ineco_thai_account.group_individual_taxinvoice"/>
+                    <field name="receive_date" groups="ineco_thai_account.group_individual_taxinvoice"/>
             	</field>
             	<field name="amount_untaxed" position="replace">
             		<field name="amount_untaxed" invisible="1" sum="Untaxed Amount"/>
@@ -150,7 +157,7 @@
             		<field name="period_tax_id" invisible="1" />
             	</field>
             	<field name="state" position="after">
-            		<field name="internal_number" />
+            		<field name="internal_number" invisible="1" />
             	</field>
             </field>
        	</record>

@@ -83,10 +83,8 @@ class account_invoice(models.Model):
     commission_pay = fields.Boolean('Pay Commission')
     account_move_lines = fields.Many2many('account.move.line', string='General Ledgers',
         compute='_get_move_lines')
-    _columns = {
-        #'account_move_lines':fields.function(_get_move_lines, type='many2many', relation='account.move.line', string='General Ledgers'),                
-        #'service': fields.boolean('Service'),
-    }
+    receive_no = fields.Char('Receipt No', index=True, copy=False, size=32)
+    receive_date = fields.Date('Receipt Date', index=True, copy=False)
     _defaults = {
         #'service': False,
         'commission_sale': 0.0,

@@ -45,6 +45,7 @@ A. Sale Module:
     """,
     'website': 'http://www.ineco.co.th',
     'data': [
+        'security.xml',
         'wht_data.xml',
         'sequence.xml',
         'wht_view.xml',
@@ -61,8 +62,7 @@ A. Sale Module:
         'report_view.xml',
         'account_cash_move_view.xml',
         'account_petty_fund_view.xml',
-        'account_petty_payment_view.xml', 
-        'security.xml',
+        'account_petty_payment_view.xml',
         'hr_expense_view.xml',
     ],
     'update_xml': [

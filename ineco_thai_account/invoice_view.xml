@@ -16,6 +16,7 @@
                 </field>
 
                 <field name="fiscal_position" position="after">
+                    <field name="partner_delivery_id" />
                     <field name="receive_no" groups="ineco_thai_account.group_individual_taxinvoice"/>
                     <field name="receive_date" groups="ineco_thai_account.group_individual_taxinvoice"/>
                 </field>

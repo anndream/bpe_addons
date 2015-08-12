@@ -70,6 +70,12 @@
 	        		</group>
 	        	</field>
 
+                <field name="amount_untaxed" position="before">
+                    <field name="origin_date_invoice" invisible="1" />
+                    <field name="origin_amount_untaxed" attrs="{'invisible':[('origin_date_invoice', '=', False)]}" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                    <field name="correct_amount_untaxed" attrs="{'invisible':[('origin_date_invoice', '=', False)]}" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                </field>
+
 			</field>
 		</record>   
         

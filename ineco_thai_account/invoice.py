@@ -63,6 +63,21 @@ class account_invoice(models.Model):
         for line in self.move_id.line_id:
             partial_lines += line
         self.account_move_lines = partial_lines
+
+    @api.one
+    def _get_origin_invoice(self):
+        account_invoice_obj = self.env['account.invoice']
+        origin_invoices = account_invoice_obj.search([('number','=',self.origin)])
+        origin_invoice = False
+        if origin_invoices:
+            origin_invoice = origin_invoices[0]
+        self.origin_date_invoice = False
+        self.origin_amount_untaxed = 0.00
+        self.correct_amount_untaxed = 0.00
+        if origin_invoice:
+            self.origin_date_invoice = origin_invoice.date_invoice
+            self.origin_amount_untaxed = origin_invoice.amount_untaxed
+            self.correct_amount_untaxed = origin_invoice.amount_untaxed - self.amount_untaxed
     
     _inherit = "account.invoice"
     
@@ -85,6 +100,9 @@ class account_invoice(models.Model):
         compute='_get_move_lines')
     receive_no = fields.Char('Receipt No', index=True, copy=False, size=32)
     receive_date = fields.Date('Receipt Date', index=True, copy=False)
+    origin_date_invoice = fields.Date(string='Refund Date', compute="_get_origin_invoice")
+    origin_amount_untaxed = fields.Float(string='Origin Amount Untaxed', compute="_get_origin_invoice")
+    correct_amount_untaxed = fields.Float(string='Correct Amount Untaxed', compute="_get_origin_invoice")
     _defaults = {
         #'service': False,
         'commission_sale': 0.0,

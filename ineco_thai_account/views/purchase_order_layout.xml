@@ -1,0 +1,324 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+	<data>
+
+        <record id="ineco_paper_purchase_order" model="report.paperformat">
+            <field name="name">Purchase Order</field>
+            <field name="default" eval="True" />
+            <field name="format">A4</field>
+            <field name="page_height">0</field>
+            <field name="page_width">0</field>
+            <field name="orientation">Portrait</field>
+            <field name="margin_top">80</field>
+            <field name="margin_bottom">60</field>
+            <field name="margin_left">7</field>
+            <field name="margin_right">7</field>
+            <field name="header_line" eval="False" />
+            <field name="header_spacing">75</field>
+            <field name="dpi">90</field>
+        </record>
+
+		<template id="ineco_purchase_order_external_layout">
+		    <t t-if="o and 'company_id' in o">
+		        <t t-set="company" t-value="o.company_id"></t>
+		    </t>
+		    <t t-if="not o or not 'company_id' in o">
+		        <t t-set="company" t-value="res_company"></t>
+		    </t>
+		    <t t-call="ineco_thai_account.ineco_purchase_order_external_layout_header" />
+		    <t t-raw="0" />
+		    <t t-call="ineco_thai_account.ineco_purchase_order_external_layout_footer" />
+		</template>
+
+        <template id="ineco_purchase_order_external_layout_header">
+		    <div class="header">
+                <div class="row">
+                    <div class="col-xs-3">
+		                <img t-if="company.logo"
+                             t-att-src="'data:image/png;base64,%s' % company.logo"
+                             align="left"
+                             style="max-height: 70px;max-width: 160px;"/>
+                    </div>
+                    <div class="col-xs-9">
+                        <div class="row" style="font-size: 18px">
+                            <strong><span t-field="company.name"/></strong>
+                        </div>
+                        <div class="row" style="font-size: 12px">
+                            <span t-field="company.partner_id.street"/> <span t-field="company.partner_id.street2"/> <span t-field="company.partner_id.city"/> <span t-field="company.partner_id.zip"/>
+                        </div>
+                        <div class="row" style="font-size: 12px">
+                            โทร. <span t-field="company.partner_id.phone" /> แฟ็กซ์. <span t-field="company.partner_id.fax" /> อีเมล์. <span t-field="company.partner_id.email"/>
+                        </div>
+                        <div t-if="company.partner_id.vat" class="row" style="font-size: 12px">
+                            เลขประจำตัวผู้เสียภาษี <span t-field="company.partner_id.vat" />
+                        </div>
+                        <p />
+                    </div>
+                </div>
+                <p />
+                <div class="row">
+                    <div class="col-xs-2">
+
+                    </div>
+                    <div class="col-xs-8" style="font-size: 18px;text-align:center">
+                        <strong>ใบสั่งซื้อ / Purchase Order</strong>
+                    </div>
+                    <div class="col-xs-2" style="text-align:right;font-size: 10px">
+                        <span class="page" /> / <span class="topage" />
+                    </div>
+                    <p />
+                </div>
+                <div class="row" style="font-size: 12px;padding: 0px;">
+                    <p />
+                    <div class="col-xs-8">
+                        <strong>ผู้ขาย</strong>
+                        <p t-if="o.partner_id.parent_id and o.partner_id">
+                            <span t-field="o.partner_id.parent_id.name"/>
+                            <span t-field="o.partner_id.parent_id.street" />
+                            <span t-field="o.partner_id.parent_id.street2" />
+                            <span t-field="o.partner_id.parent_id.city" />
+                            <span t-field="o.partner_id.parent_id.zip" />
+                        </p>
+                        <p t-if="o.partner_id and not o.partner_id.parent_id">
+                            <span t-field="o.partner_id.name"/>
+                            <span t-field="o.partner_id.street" />
+                            <span t-field="o.partner_id.street2" />
+                            <span t-field="o.partner_id.city" />
+                            <span t-field="o.partner_id.zip" />
+                        </p>
+                    </div>
+                    <div class="col-xs-2">
+                        <strong>เลขที่</strong>
+                        <p t-field="o.name"/>
+                    </div>
+                    <div class="col-xs-2">
+                        <strong>วันที่</strong>
+                        <p t-field="o.date_order" t-field-options='{"format": "dd/MM/yyyy"}'/>
+                    </div>
+                </div>
+                <div class="row" style="font-size: 12px;">
+                    <div class="col-xs-3">
+                        <strong>ติดต่อ</strong>
+                        <p t-if="o.partner_id.parent_id">
+                            <span t-field="o.partner_id.name"/>
+                        </p>
+                        <p t-if="not o.partner_id.parent_id">
+                            -
+                        </p>
+                    </div>
+                    <div class="col-xs-2">
+                        <strong>โทรศัพท์</strong>
+                        <p t-field="o.partner_id.phone"/>
+                    </div>
+                    <div class="col-xs-2">
+                        <strong>โทรสาร</strong>
+                        <p t-field="o.partner_id.fax"/>
+                    </div>
+                    <div class="col-xs-5">
+                        <strong>อีเมล์</strong>
+                        <p t-field="o.partner_id.email"/>
+                    </div>
+                </div>
+                <div class="row" style="font-size: 12px;padding: 0px;">
+                    <div class="col-xs-4">
+                        <strong>สถานที่ส่ง</strong>
+                        <p t-field="o.picking_type_id.warehouse_id.name"/>
+                    </div>
+                    <div class="col-xs-2">
+                        <strong>เงื่อนไขการส่ง</strong>
+                        <p t-field="o.incoterm_id.name"/>
+                    </div>
+                    <div class="col-xs-2">
+                        <strong>เงื่อนไขเครดิต</strong>
+                        <p t-field="o.payment_term_id.name"/>
+                    </div>
+                    <div class="col-xs-2">
+                        <strong>กำหนดส่ง</strong>
+                        <p t-field="o.minimum_planned_date" t-field-options='{"format": "dd/MM/yyyy"}'/>
+                    </div>
+                    <div class="col-xs-2">
+                        <strong>อ้างถึงใบขอซื้อ</strong>
+                        <p t-field="o.origin" />
+                    </div>
+                </div>
+                <div class="row">
+
+                </div>
+		    </div>
+		</template>
+
+		<template id="ineco_purchase_order_external_layout_footer">
+		    <div class="footer">
+                <table style="font-size: 12px; width: 100%; max-width: 100%;">
+                    <thead>
+                        <th style="width: 15mm;"></th>
+                        <th style="width: 100mm;"></th>
+                        <th style="width: 20mm;"></th>
+                        <th class="text-right" style="width: 20mm;"></th>
+                        <th class="text-right" style="width: 20mm;"></th>
+                    </thead>
+                    <tbody>
+                        <tr style="padding: 8px; line-height: 1.42857143;vertical-align: top;">
+                            <td colspan="3" rowspan="2">
+                                <span t-field="o.notes" />
+                            </td>
+                            <td>
+                                <strong>จำนวนเงิน</strong>
+                            </td>
+                            <td class="text-right" >
+                                <span t-if="page = topage" t-field="o.amount_untaxed"
+                                      t-field-options='{"widget": "monetary", "display_currency": "o.currency_id"}' />
+                            </td>
+                        </tr>
+                        <tr style="padding: 8px; line-height: 1.42857143;vertical-align: top;">
+                            <td>
+                                <strong>ภาษี</strong>
+                            </td>
+                            <td class="text-right">
+                                <span t-if="page = topage" t-field="o.amount_tax"
+                                      t-field-options='{"widget": "monetary", "display_currency": "o.currency_id"}' />
+                            </td>
+                        </tr>
+                        <tr style="padding: 8px; line-height: 1.42857143;vertical-align: top;">
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td>
+                                <strong>รวมทั้งสิ้น</strong>
+                            </td>
+                            <td class="text-right">
+                                <span t-if="page = topage" t-field="o.amount_total"
+                                      t-field-options='{"widget": "monetary", "display_currency": "o.currency_id"}' />
+                            </td>
+                        </tr>
+                    </tbody>
+
+                </table>
+                <div class="row" style="font-size: 12px;">
+                    <div class="col-xs-1" style="line-height: 60px">
+                        <strong>จัดทำโดย</strong>
+                    </div>
+                    <div class="col-xs-3">
+
+                    </div>
+                    <div class="col-xs-1" style="line-height: 60px">
+                        <strong>ตรวจสอบโดย</strong>
+                    </div>
+                    <div class="col-xs-3">
+
+                    </div>
+                    <div class="col-xs-1" style="line-height: 60px">
+                        <strong>อนุมัติโดย</strong>
+                    </div>
+                    <div class="col-xs-3">
+
+                    </div>                </div>
+                <div class="row" style="font-size: 12px;">
+                    <div class="col-xs-1">
+
+                    </div>
+                    <div class="col-xs-3">
+                        <span t-field="o.validator.partner_id.name"/>
+                    </div>
+                    <div class="col-xs-1">
+
+                    </div>
+                    <div class="col-xs-3">
+                        (...........................................)
+                    </div>
+                    <div class="col-xs-1">
+
+                    </div>
+                    <div class="col-xs-3">
+                        (...........................................)
+                    </div>
+
+                </div>
+                <div class="row" style="font-size: 12px;">
+                    <div class="col-xs-1">
+
+                    </div>
+                    <div class="col-xs-3">
+                        <span t-field="o.date_order" />
+                    </div>
+                    <div class="col-xs-1">
+
+                    </div>
+                    <div class="col-xs-3">
+                        ............../.............../..............
+                    </div>
+                    <div class="col-xs-1">
+
+                    </div>
+                    <div class="col-xs-3">
+                        ............../.............../..............
+                    </div>
+                </div>
+		    </div>
+		</template>
+
+		<template id="ineco_report_purchase_order_document">
+		    <t t-call="ineco_thai_account.ineco_purchase_order_external_layout">
+		        <div class="page">
+		            <div class="oe_structure"/>
+                    <table class="table table-condensed" style="font-size: 12px;">
+                        <thead>
+                            <th style="width: 15mm;" >ลำดับ</th>
+                            <th style="width: 100mm;">รายการ</th>
+                            <th style="width: 20mm;">จำนวน</th>
+                            <th class="text-right" style="width: 20mm;">ราคา/หน่วย</th>
+                            <th class="text-right" style="width: 20mm;">ราคารวม</th>
+                        </thead>
+                        <tbody>
+                            <t t-set="line_no" t-value="1"/>
+                            <tr t-foreach="o.order_line" t-as="line">
+                                <td>
+                                    <span t-esc="line_no" />
+                                </td>
+                                <td>
+                                    <span t-field="line.name"/>
+                                </td>
+                                <td>
+                                    <span t-field="line.product_qty"/>
+                                    <span t-field="line.product_uom.name"/>
+                                </td>
+                                <td class="text-right">
+                                    <span t-field="line.price_unit" />
+                                </td>
+                                <td class="text-right">
+                                    <span t-field="line.price_subtotal"
+                                        t-field-options='{"widget": "monetary", "display_currency": "o.currency_id"}'/>
+                                </td>
+                                <t t-set="line_no" t-value="line_no + 1"/>
+                            </tr>
+                        </tbody>
+
+                    </table>
+
+		            <div class="oe_structure"/>
+		        </div>
+		    </t>
+		</template>
+
+		<template id="ineco_report_purchase_order_template">
+		    <t t-call="ineco_thai_account.html_container">
+		        <t t-foreach="doc_ids" t-as="doc_id">
+		            <t t-raw="translate_doc(doc_id, doc_model, 'partner_id.lang', 'ineco_thai_account.ineco_report_purchase_order_document')"/>
+		        </t>
+		    </t>
+		</template>
+
+        <report
+            string="INECO - PURCHASE ORDER"
+            id="ineco_report_purchase_order"
+            model="purchase.order"
+            report_type="qweb-pdf"
+            name="ineco_thai_account.ineco_report_purchase_order_template"
+        />
+        <record id="ineco_report_purchase_order" model="ir.actions.report.xml">
+            <field name="paperformat_id" ref="ineco_thai_account.ineco_paper_purchase_order"/>
+        </record>
+
+
+    </data>
+</openerp>

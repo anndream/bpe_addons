@@ -1,0 +1,320 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+	<data>
+
+        <record id="ineco_paper_receipt" model="report.paperformat">
+            <field name="name">Billing / Receipt</field>
+            <field name="default" eval="True" />
+            <field name="format">A4</field>
+            <field name="page_height">0</field>
+            <field name="page_width">0</field>
+            <field name="orientation">Portrait</field>
+            <field name="margin_top">75</field>
+            <field name="margin_bottom">80</field>
+            <field name="margin_left">7</field>
+            <field name="margin_right">7</field>
+            <field name="header_line" eval="False" />
+            <field name="header_spacing">70</field>
+            <field name="dpi">90</field>
+        </record>
+
+		<template id="ineco_receipt_external_layout">
+		    <t t-if="o and 'company_id' in o">
+		        <t t-set="company" t-value="o.company_id"></t>
+		    </t>
+		    <t t-if="not o or not 'company_id' in o">
+		        <t t-set="company" t-value="res_company"></t>
+		    </t>
+		    <t t-call="ineco_thai_account.ineco_receipt_external_layout_header" />
+		    <t t-raw="0" />
+		    <t t-call="ineco_thai_account.ineco_receipt_external_layout_footer" />
+		</template>
+
+        <template id="ineco_receipt_external_layout_header">
+		    <div class="header">
+                <div class="row">
+                    <div class="col-xs-3">
+		                <img t-if="company.logo"
+                             t-att-src="'data:image/png;base64,%s' % company.logo"
+                             align="left"
+                             style="max-height: 70px;max-width: 160px;"/>
+                    </div>
+                    <div class="col-xs-9">
+                        <div class="row" style="font-size: 18px">
+                            <strong><span t-field="company.name"/></strong>
+                        </div>
+                        <div class="row" style="font-size: 12px">
+                            <span t-field="company.partner_id.street"/> <span t-field="company.partner_id.street2"/> <span t-field="company.partner_id.city"/> <span t-field="company.partner_id.zip"/>
+                        </div>
+                        <div class="row" style="font-size: 12px">
+                            โทร. <span t-field="company.partner_id.phone" /> แฟ็กซ์. <span t-field="company.partner_id.fax" /> อีเมล์. <span t-field="company.partner_id.email"/>
+                        </div>
+                        <div t-if="company.partner_id.vat" class="row" style="font-size: 12px">
+                            เลขประจำตัวผู้เสียภาษี <span t-field="company.partner_id.vat" />
+                        </div>
+                        <p />
+                    </div>
+                </div>
+                <p />
+                <div class="row">
+                    <div class="col-xs-2">
+
+                    </div>
+                    <div class="col-xs-8" style="font-size: 18px;text-align:center">
+                        <strong>ใบเสร็จรับเงิน / Receipt</strong>
+                    </div>
+                    <div class="col-xs-2" style="text-align:right;font-size: 10px">
+                        <span class="page" /> / <span class="topage" />
+                    </div>
+                    <p />
+                </div>
+                <div class="row" style="font-size: 11px;padding: 0px;">
+                    <p />
+                    <div class="col-xs-8">
+                        <strong>ลูกค้า</strong>
+                        <p>
+                            <span t-field="o.partner_id.name"/>
+                            <span t-field="o.partner_id.street" />
+                            <span t-field="o.partner_id.street2" />
+                            <span t-field="o.partner_id.city" />
+                            <span t-field="o.partner_id.zip" />
+                        </p>
+                        <p>
+                            เลขประจำตัวผู้เสียภาษี <span t-field="o.partner_id.vat" />
+                            ลำดับสาขา <span t-field="o.name" />
+                        </p>
+                    </div>
+                    <div class="col-xs-2">
+                        <strong>เลขที่</strong>
+                        <p t-field="o.receipt_number"/>
+                    </div>
+                    <div class="col-xs-2">
+                        <strong>วันที่</strong>
+                        <p t-field="o.date_due" t-field-options='{"format": "dd/MM/yyyy"}'/>
+                    </div>
+                </div>
+                <div class="row" style="font-size: 11px;">
+                    <div class="col-xs-3">
+                        <strong>ติดต่อ</strong>
+                        <p t-if="o.partner_id.parent_id">
+                            <span t-field="o.partner_id.name"/>
+                        </p>
+                        <p t-if="not o.partner_id.parent_id">
+                            -
+                        </p>
+                    </div>
+                    <div class="col-xs-2">
+                        <strong>โทรศัพท์</strong>
+                        <p t-field="o.partner_id.phone"/>
+                    </div>
+                    <div class="col-xs-3">
+                        <strong>โทรสาร</strong>
+                        <p t-field="o.partner_id.fax"/>
+                    </div>
+                    <div class="col-xs-4">
+                        <strong>อ้างถึงใบวางบิล</strong>
+                        <p t-field="o.bill_number" />
+                    </div>
+                </div>
+
+                <div class="row">
+
+                </div>
+		    </div>
+		</template>
+
+		<template id="ineco_receipt_external_layout_footer">
+		    <div class="footer">
+                <table style="font-size: 11px; width: 100%; max-width: 100%;">
+                    <thead>
+                        <th style="width: 15mm;"></th>
+                        <th style="width: 100mm;"></th>
+                        <th style="width: 20mm;"></th>
+                        <th class="text-right" style="width: 20mm;"></th>
+                        <th class="text-right" style="width: 20mm;"></th>
+                    </thead>
+                    <tbody>
+                        <tr style="padding: 8px; line-height: 1.42857143;vertical-align: top;">
+                            <td colspan="3" >
+                                <span t-field="o.narration" />
+                            </td>
+                            <td>
+                                <strong>จำนวนเงิน</strong>
+                            </td>
+                            <td class="text-right" >
+                                <span t-if="page = topage" t-field="o.amount"
+                                      t-field-options='{"widget": "monetary", "display_currency": "o.currency_id"}' />
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="row mt16" style="font-size: 11px;">
+                    <div class="col-xs-1" style="text-align:left;">
+                        <strong>ชำระโดย</strong>
+                    </div>
+                    <div class="col-xs-1">
+                        <div style="width:13px;height:13px;border-radius:5px;border-width:1px;border-color:#000;border-style: solid;"></div>
+                    </div>
+                    <div class="col-xs-10">
+                        <strong>เงินสด</strong>
+                    </div>
+                </div>
+                <div class="row" style="font-size: 11px;">
+                    <div class="col-xs-1" style="text-align:left;">
+
+                    </div>
+                    <div class="col-xs-1">
+                        <div style="width:13px;height:13px;border-radius:5px;border-width:1px;border-color:#000;border-style: solid;"></div>
+                    </div>
+                    <div class="col-xs-10">
+                        <strong>เช็คธนาคาร / เงินโอน</strong>
+                    </div>
+                </div>
+                <div class="row" style="font-size: 11px;">
+                    <div class="col-xs-1" style="text-align:left;">
+
+                    </div>
+                    <div class="col-xs-11">
+                        ธนาคาร ........................................................................................ สาขา .........................................................................................
+                    </div>
+                </div>
+                <div class="row" style="font-size: 11px;">
+                    <div class="col-xs-1" style="text-align:left;">
+
+                    </div>
+                    <div class="col-xs-11">
+                        เลขที่ .......................................................................................... ลงวันที่ .........................................................................................
+                    </div>
+                </div>
+
+                <div class="row mt16" style="font-size: 11px;">
+                    <div class="col-xs-7" style="display: block;text-align:left;height: 80px;">
+
+                    </div>
+                    <div class="col-xs-5" style="display: block;text-align:right;height: 80px;">
+                        <strong>ในนาม <span t-field="o.company_id.name" /></strong>
+                    </div>
+                </div>
+
+                <div class="row" style="font-size: 11px;text-align: right;">
+                    <div class="col-xs-4" style="text-align:right;">
+                        <strong>ผู้รับเงิน</strong> (...........................................)
+                    </div>
+                    <div class="col-xs-4" style="text-align:right;">
+
+                    </div>
+                    <div class="col-xs-4" style="text-align:right;">
+                        (...........................................)
+                    </div>
+
+                </div>
+                <div class="row" style="font-size: 11px;text-align: right;">
+                    <div class="col-xs-4">
+                        ............../.............../..............
+                    </div>
+                    <div class="col-xs-4">
+
+                    </div>
+                    <div class="col-xs-4">
+                        <strong>ผู้รับมอบอำนาจลงนาม</strong>
+                    </div>
+                </div>
+		    </div>
+		</template>
+
+		<template id="ineco_report_receipt_document">
+		    <t t-call="ineco_thai_account.ineco_receipt_external_layout">
+		        <div class="page">
+		            <div class="oe_structure"/>
+                    <strong>ใบแจ้งหนี้/ใบกำกับภาษี</strong>
+                    <table class="table table-condensed" style="font-size: 11px;">
+                        <thead>
+                            <th style="width: 15mm;" >ลำดับ</th>
+                            <th style="width: 40mm;">เลขใบกำกับ</th>
+                            <th style="width: 40mm;">ลงวันที่</th>
+                            <th style="width: 40mm;">กำหนดชำระ</th>
+                            <th class="text-right" style="width: 40mm;">จำนวนเงิน</th>
+                        </thead>
+                        <tbody>
+                            <t t-set="line_no" t-value="1"/>
+                            <tr t-foreach="o.line_cr_ids" t-as="line">
+                                <td>
+                                    <span t-esc="line_no" />
+                                </td>
+                                <td>
+                                    <span t-field="line.move_line_id.move_id.name"/>
+                                </td>
+                                <td>
+                                    <span t-field="line.date_original" t-field-options='{"format": "dd/MM/yyyy"}'/>
+                                </td>
+                                <td class="text-left">
+                                    <span t-field="line.date_due" t-field-options='{"format": "dd/MM/yyyy"}'/>
+                                </td>
+                                <td class="text-right">
+                                    <span t-if="page = topage" t-field="line.amount"
+                                      t-field-options='{"widget": "monetary", "display_currency": "o.currency_id"}' />
+                                </td>
+                                <t t-set="line_no" t-value="line_no + 1"/>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <strong>ใบลดหนี้</strong>
+                    <table class="table table-condensed" style="font-size: 11px;">
+                        <thead>
+                            <th style="width: 15mm;" >ลำดับ</th>
+                            <th style="width: 40mm;">ใบลดหนี้</th>
+                            <th style="width: 40mm;">ลงวันที่</th>
+                            <th style="width: 40mm;">กำหนดชำระ</th>
+                            <th class="text-right" style="width: 40mm;">จำนวนเงิน</th>
+                        </thead>
+                        <tbody>
+                            <t t-set="line_no2" t-value="1"/>
+                            <tr t-foreach="o.line_dr_ids" t-as="line">
+                                <td>
+                                    <span t-esc="line_no2" />
+                                </td>
+                                <td>
+                                    <span t-field="line.move_line_id.move_id.name"/>
+                                </td>
+                                <td>
+                                    <span t-field="line.date_original" t-field-options='{"format": "dd/MM/yyyy"}'/>
+                                </td>
+                                <td class="text-left">
+                                    <span t-field="line.date_due" t-field-options='{"format": "dd/MM/yyyy"}'/>
+                                </td>
+                                <td class="text-right">
+                                    -<span t-if="page = topage" t-field="line.amount"
+                                      t-field-options='{"widget": "monetary", "display_currency": "o.currency_id"}' />
+                                </td>
+                                <t t-set="line_no2" t-value="line_no2 + 1"/>
+                            </tr>
+                        </tbody>
+                    </table>
+		            <div class="oe_structure"/>
+		        </div>
+		    </t>
+		</template>
+
+		<template id="ineco_report_receipt_template">
+		    <t t-call="ineco_thai_account.html_container">
+		        <t t-foreach="doc_ids" t-as="doc_id">
+		            <t t-raw="translate_doc(doc_id, doc_model, 'partner_id.lang', 'ineco_thai_account.ineco_report_receipt_document')"/>
+		        </t>
+		    </t>
+		</template>
+
+        <report
+            string="INECO - RECEIPT"
+            id="ineco_report_receipt"
+            model="account.voucher"
+            report_type="qweb-pdf"
+            name="ineco_thai_account.ineco_report_receipt_template"
+        />
+        <record id="ineco_report_receipt" model="ir.actions.report.xml">
+            <field name="paperformat_id" ref="ineco_thai_account.ineco_paper_receipt"/>
+        </record>
+
+    </data>
+</openerp>

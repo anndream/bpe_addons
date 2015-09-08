@@ -94,7 +94,13 @@
                     <field name="receive_no" groups="ineco_thai_account.group_individual_taxinvoice"/>
                     <field name="receive_date" invisible="1"/>
 				</xpath>
-		      	<xpath expr="//page[@string='Payment Information']" position="after" >       	    
+				<xpath expr="//page[@string='Payment Information']/field[@name='line_cr_ids']/tree/field[@name='amount_unreconciled']" position="attributes">
+                    <attribute name="sum">Total Unreconciled</attribute>
+				</xpath>
+                <xpath expr="//page[@string='Payment Information']/field[@name='line_dr_ids']/tree/field[@name='amount_unreconciled']" position="attributes">
+                    <attribute name="sum">Total Unreconciled</attribute>
+				</xpath>
+		      	<xpath expr="//page[@string='Payment Information']" position="after" >
 	        	    <page string="General Ledger">
 	        	    	<field name="account_move_lines" readonly="1">
 	        	    		<tree string="General ledgers">
